@@ -1,4 +1,4 @@
-# Image Name Searcher
+# ImgSeek
 
 A Windows tool that **scans any folder of images using OCR** (Windows built-in OCR engine) and finds all photos where a given name or keyword appears — in chat screenshots, Discord messages, captions, etc.
 
