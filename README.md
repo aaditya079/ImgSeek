@@ -30,7 +30,7 @@ A gallery will automatically open in your browser showing all matched images.
 ### Option 2 — Command line
 
 ```bash
-dotnet run --project OcrScanner/OcrScanner.csproj -c Release -- "C:\path\to\images" "name" "output.html"
+dotnet run --project OcrScanner.csproj -c Release -- "C:\path\to\images" "name" "output.html"
 ```
 
 | Argument | Description |
@@ -49,5 +49,5 @@ dotnet run --project OcrScanner/OcrScanner.csproj -c Release -- "C:\path\to\imag
 ## Building
 
 ```bash
-dotnet build OcrScanner/OcrScanner.csproj -c Release
+dotnet build OcrScanner.csproj -c Release
 ```
