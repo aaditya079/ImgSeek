@@ -1,12 +1,4 @@
-## Build output
 bin/
 obj/
-
-## Temp gallery files
-*_gallery.html
-porcu_matches.txt
-image_list.txt
-
-## OS
-Thumbs.db
-.DS_Store
+*.user
+.vs/

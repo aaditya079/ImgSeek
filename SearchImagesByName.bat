@@ -1,33 +1,50 @@
 @echo off
 chcp 65001 >nul
-title Image Name Searcher
-
-echo ╔══════════════════════════════════════╗
-echo ║        Image Name Searcher           ║
-echo ║  Finds photos where a name appears   ║
-echo ╚══════════════════════════════════════╝
-echo.
-
-set /p "FOLDER=Enter folder path to scan: "
-set /p "NAME=Enter name to search for: "
-
-if "%FOLDER%"=="" (echo ERROR: No folder entered. & pause & exit /b 1)
-if "%NAME%"=="" (echo ERROR: No name entered. & pause & exit /b 1)
-
-set "GALLERY=%TEMP%\img_search_%NAME%_gallery.html"
-set "SCANNER=C:\Users\aadit\.gemini\antigravity\OcrScanner\OcrScanner.csproj"
+title ImgSeek - Image Name Searcher
 
 echo.
-echo Scanning "%FOLDER%" for "%NAME%"...
+echo ==========================================
+echo        ImgSeek - Image Name Searcher
+echo   Finds photos where a name appears
+echo ==========================================
 echo.
 
-dotnet run --project "%SCANNER%" -c Release -- "%FOLDER%" "%NAME%" "%GALLERY%"
+REM -- Resolve script directory (always correct even if run from another folder) --
+set "SCRIPT_DIR=%~dp0"
+set "CSPROJ=%SCRIPT_DIR%OcrScanner.csproj"
 
-if exist "%GALLERY%" (
+REM -- Check dotnet is installed --
+where dotnet >nul 2>&1
+if errorlevel 1 (
+    echo ERROR: dotnet is not installed or not on PATH.
     echo.
-    echo Opening gallery...
-    start "" "%GALLERY%"
+    echo Download .NET 6 SDK from:
+    echo   https://dotnet.microsoft.com/download/dotnet/6.0
+    echo.
+    pause
+    exit /b 1
 )
+
+REM -- Check the project file exists --
+if not exist "%CSPROJ%" (
+    echo ERROR: Cannot find OcrScanner.csproj
+    echo Expected at: %CSPROJ%
+    echo.
+    echo Make sure SearchImagesByName.bat is in the same folder as OcrScanner.csproj
+    echo.
+    pause
+    exit /b 1
+)
+
+REM -- Ask user for inputs --
+set /p "FOLDER=Enter folder path to scan: "
+set /p "TERM=Enter name to search for: "
+
+echo.
+echo Scanning "%FOLDER%" for "%TERM%"...
+echo.
+
+dotnet run --project "%CSPROJ%" -c Release -- "%FOLDER%" "%TERM%"
 
 echo.
 pause
