@@ -118,7 +118,7 @@ class Program
         File.WriteAllText(outputHtml, BuildHtml(matches, searchTerm, copyBatName), Encoding.UTF8);
 
         // Write copy batch script
-        File.WriteAllText(copyBatPath, BuildCopyBat(matches, searchTerm), Encoding.ASCII);
+        File.WriteAllText(copyBatPath, BuildCopyBat(matches, searchTerm), Encoding.UTF8);
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Gallery  : " + outputHtml);
