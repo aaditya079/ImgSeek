@@ -39,6 +39,14 @@ dotnet run --project OcrScanner.csproj -c Release -- "C:\path\to\images" "name" 
 | `name` | Name/keyword to look for inside images |
 | `output.html` | *(Optional)* Path to save the HTML gallery |
 
+### 📁 Output Location
+
+By default, the generated HTML gallery and the companion `_CopyFiles.bat` script are saved to your Windows Temporary folder:
+`C:\Users\<YourUsername>\AppData\Local\Temp\`
+
+* **Quick Access**: Press `Win + R`, type `%temp%`, and hit **Enter** to open the directory directly.
+* **Custom Location**: You can optionally specify a custom path for the HTML file as the 3rd command-line argument. The `_CopyFiles.bat` file will be generated in that same custom directory.
+
 ## How it works
 
 1. Recursively finds all image files in the given folder
