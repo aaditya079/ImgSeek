@@ -188,6 +188,8 @@ class Program
         h.AppendLine(".btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}");
         h.AppendLine(".btn-copy{background:linear-gradient(135deg,#1e88e5,#1565c0);color:#fff}");
         h.AppendLine(".btn-copy:hover{background:linear-gradient(135deg,#42a5f5,#1e88e5);transform:translateY(-1px);box-shadow:0 4px 15px #1e88e540}");
+        h.AppendLine(".btn-download{background:linear-gradient(135deg,#10b981,#059669);color:#fff}");
+        h.AppendLine(".btn-download:hover{background:linear-gradient(135deg,#34d399,#10b981);transform:translateY(-1px);box-shadow:0 4px 15px #10b98140}");
         h.AppendLine(".btn-paths{background:#1e2a3a;color:#90caf9;border:1px solid #1e88e540}");
         h.AppendLine(".btn-paths:hover{background:#253547;transform:translateY(-1px)}");
         h.AppendLine(".badge{margin-left:auto;background:#0f3460;padding:6px 14px;border-radius:20px;font-size:.85rem;color:#4fc3f7;font-weight:600;border:1px solid #4fc3f740}");
@@ -222,6 +224,7 @@ class Program
 
         h.AppendLine("<div class=\"toolbar\">");
         h.AppendLine("  <button class=\"btn btn-copy\" onclick=\"copyAll()\">&#128190; Copy All Photos</button>");
+        h.AppendLine("  <button class=\"btn btn-download\" onclick=\"downloadAll()\">&#128229; Download All</button>");
         h.AppendLine("  <button class=\"btn btn-paths\" id=\"btnP\" onclick=\"togglePaths()\">&#128196; Show File Paths</button>");
         h.AppendLine("  <span class=\"badge\">" + cnt + " match" + matchEs + "</span>");
         h.AppendLine("</div>");
@@ -290,6 +293,22 @@ class Program
         h.AppendLine("  a.href=dir+BAT.replace(/ /g,'%20');");
         h.AppendLine("  a.click();");
         h.AppendLine("  toast('Opening copy tool...');");
+        h.AppendLine("}");
+        h.AppendLine("");
+        h.AppendLine("function downloadAll(){");
+        h.AppendLine("  if(U.length===0) return;");
+        h.AppendLine("  U.forEach(function(uri,i){");
+        h.AppendLine("    setTimeout(function(){");
+        h.AppendLine("      var f=P[i].split(/[\\\\/]/).pop();");
+        h.AppendLine("      var a=document.createElement('a');");
+        h.AppendLine("      a.href=uri;");
+        h.AppendLine("      a.download=f;");
+        h.AppendLine("      document.body.appendChild(a);");
+        h.AppendLine("      a.click();");
+        h.AppendLine("      document.body.removeChild(a);");
+        h.AppendLine("    },i*150);");
+        h.AppendLine("  });");
+        h.AppendLine("  toast('Downloading ' + U.length + ' photo(s)...');");
         h.AppendLine("}");
 
         h.AppendLine("var tt;");
