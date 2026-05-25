@@ -6,18 +6,6 @@ A state-of-the-art Windows utility that **scans directories of images using nati
 
 ---
 
-## 🎥 App Showcase
-
-> [!TIP]
-> **To add a 30-second Showcase Demo GIF here:**
-> 1. Run `ImgSeek` and perform a search.
-> 2. Capture your screen with a free utility like [ShareX](https://getsharex.com/) or [ScreenToGif](https://www.screentogif.com/).
-> 3. Save the animation as `showcase_demo.gif` in the repository's root folder and push to GitHub! It will automatically load and display your showcase here.
-
-*Double-click the `.exe` to open the gorgeous Fluent GUI, or run it via command line to process images in automated headless scripts.*
-
----
-
 ## 🌟 Key Features
 
 *   **🎨 Stunning WinUI 3 Desktop App**: Implements Microsoft’s latest Fluent Design language natively with rounded corners, Segoe Fluent Icons, a glowing dark theme, and a gorgeous semi-transparent **Mica Backdrop** material.
@@ -64,28 +52,6 @@ ImgSeek is designed with resilient defensive programming to handle all potential
     ```bash
     dotnet run -- "C:\path\to\images" "search-keyword"
     ```
-
----
-
-## 📦 How to Publish a Self-Contained `.exe` Release
-
-To compile a 100% portable, optimized single-folder distribution of ImgSeek that you can zip and release on GitHub:
-
-```bash
-dotnet publish -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true
-```
-
-### What this does:
-*   `-c Release`: Compiles highly optimized production-grade binaries.
-*   `-r win-x64`: Targets 64-bit Windows platforms.
-*   `--self-contained true`: Embeds the complete .NET runtime and Windows App SDK DLLs. The end-user **does not need to install anything** to run it.
-*   `-p:PublishReadyToRun=true`: Ahead-Of-Time (AOT) compiles assembly code to native machine instructions, decreasing startup times by up to 50%!
-
-The output will be generated in:
-`bin\Release\<TargetFramework>\win-x64\publish\` (e.g., `bin\Release\net6.0-windows10.0.19041.0\win-x64\publish\`)
-
-> [!TIP]
-> Zip the contents of the `publish/` folder and upload it directly as a **GitHub Release**! It is a massive portfolio booster that makes your repository instantly usable by anyone, not just developers.
 
 ---
 
