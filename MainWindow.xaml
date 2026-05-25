@@ -1,0 +1,227 @@
+<Window
+    x:Class="ImgSeek.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ImgSeek"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="ImgSeek — High Performance OCR Image Search">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop Kind="BaseAlt" />
+    </Window.SystemBackdrop>
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <!-- 0: App Title Header -->
+            <RowDefinition Height="Auto" />
+            <!-- 1: Controls (Input card) -->
+            <RowDefinition Height="Auto" />
+            <!-- 2: Progress & Error info -->
+            <RowDefinition Height="Auto" />
+            <!-- 3: Main Results Gallery -->
+            <RowDefinition Height="*" />
+            <!-- 4: Bottom Bulk Action Footer -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- HEADER SECTION -->
+        <Border Grid.Row="0" Padding="32,24,32,16" BorderBrush="#ffffff15" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" FontSize="26" Foreground="#4fc3f7" VerticalAlignment="Center" />
+                        <TextBlock Text="ImgSeek" FontSize="28" FontWeight="Bold" Foreground="#ffffff" VerticalAlignment="Center" />
+                        <Border Background="#1e2a3a" CornerRadius="6" Padding="6,2" Margin="4,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="WinUI 3 &amp; Windows OCR" FontSize="11" Foreground="#4fc3f7" FontWeight="SemiBold" />
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="High-speed text search within local images using native Windows hardware OCR" FontSize="13" Foreground="#9e9e9e" Margin="0,4,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- CONTROLS / INPUT CARD -->
+        <Border Grid.Row="1" Background="#1c1b22" CornerRadius="12" BorderThickness="1" BorderBrush="#ffffff10" Margin="32,20,32,12" Padding="24">
+            <Grid RowSpacing="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Row 0: Folder Picker -->
+                <Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="FolderTextBox" Grid.Column="0" Header="Images Location" PlaceholderText="Select the folder path containing images..." VerticalAlignment="Bottom" Height="40" Background="#111118" BorderBrush="#ffffff15" Foreground="White" />
+                    <Button x:Name="BrowseButton" Grid.Column="1" Click="BrowseButton_Click" VerticalAlignment="Bottom" Height="40" Padding="16,0" Style="{StaticResource AccentButtonStyle}" Background="#1e2a3a" BorderBrush="#4fc3f740">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE8B7;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="#4fc3f7" />
+                            <TextBlock Text="Browse" FontWeight="SemiBold" Foreground="#4fc3f7" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- Row 1: Keyword & Scan Trigger -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="SearchTextBox" Grid.Column="0" Header="Search Keyword" PlaceholderText="Enter the text to find inside your images..." VerticalAlignment="Bottom" Height="40" Background="#111118" BorderBrush="#ffffff15" Foreground="White" KeyDown="SearchTextBox_KeyDown" />
+                    <Button x:Name="ScanButton" Grid.Column="1" Click="ScanButton_Click" VerticalAlignment="Bottom" Height="40" Padding="24,0" Style="{StaticResource AccentButtonStyle}">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#0288d1" Offset="0" />
+                                <GradientStop Color="#0d47a1" Offset="1" />
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="White" />
+                            <TextBlock Text="Search Images" FontWeight="Bold" Foreground="White" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="CancelButton" Grid.Column="2" Click="CancelButton_Click" IsEnabled="False" VerticalAlignment="Bottom" Height="40" Padding="16,0" Background="#311b1b" BorderBrush="#ef535040">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE711;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="#ef5350" />
+                            <TextBlock Text="Cancel" FontWeight="SemiBold" Foreground="#ef5350" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- PROGRESS & ERROR BANNER SECTION -->
+        <StackPanel Grid.Row="2" Margin="32,0,32,10" Spacing="8">
+            <!-- Dynamic Notification / Error Message InfoBar -->
+            <InfoBar x:Name="MessageInfoBar" IsOpen="False" Severity="Error" Margin="0,0,0,8" />
+
+            <!-- Scan Progress Panel -->
+            <Border x:Name="ProgressBorder" Visibility="Collapsed" Background="#15ffffff" CornerRadius="8" Padding="16" BorderThickness="1" BorderBrush="#20ffffff">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <TextBlock x:Name="ProgressFileTextBlock" Text="Scanning: file.png" FontSize="12" Foreground="#9e9e9e" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="ProgressPercentTextBlock" Text="0%" FontSize="12" Foreground="#4fc3f7" FontWeight="Bold" HorizontalAlignment="Right" />
+                    </Grid>
+                    <ProgressBar x:Name="ScanProgressBar" Grid.Row="1" Value="0" Minimum="0" Maximum="100" Height="6" Background="#ffffff10" Foreground="#4fc3f7" CornerRadius="3" />
+                    <Grid Grid.Row="2">
+                        <TextBlock x:Name="ProgressStatsTextBlock" Text="Scanned 0 of 0 images" FontSize="12" Foreground="#e0e0e0" />
+                        <TextBlock x:Name="MatchesStatsTextBlock" Text="Found 0 matches" FontSize="12" Foreground="#4caf50" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </StackPanel>
+
+        <!-- GALLERY / RESULTS VIEW -->
+        <Grid Grid.Row="3" Margin="32,0,32,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock x:Name="GalleryTitleTextBlock" Grid.Row="0" Text="Search Results" FontSize="18" FontWeight="Bold" Foreground="White" Margin="0,0,0,12" />
+
+            <!-- Empty State -->
+            <StackPanel x:Name="EmptyStateStackPanel" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12" Padding="40">
+                <TextBlock Text="&#xE8B7;" FontFamily="Segoe Fluent Icons" FontSize="56" Foreground="#ffffff15" HorizontalAlignment="Center" />
+                <TextBlock Text="No Search Active" FontSize="16" FontWeight="SemiBold" Foreground="#888" HorizontalAlignment="Center" />
+                <TextBlock Text="Select a folder, enter a search term, and run search to see results." FontSize="13" Foreground="#666" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="300" />
+            </StackPanel>
+
+            <!-- Results Grid -->
+            <GridView x:Name="ResultsGridView" Grid.Row="1" Visibility="Collapsed" SelectionMode="None" Background="Transparent" Padding="0" Margin="0" BorderThickness="0" HorizontalAlignment="Stretch">
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="-1" HorizontalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="local:MatchedImageItem">
+                        <Border Width="216" Background="#1c1b22" CornerRadius="8" BorderThickness="1" BorderBrush="#ffffff0e" Margin="0,0,12,12" Padding="8">
+                            <Grid RowSpacing="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="140" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Image thumbnail with hover effect -->
+                                <Border Grid.Row="0" CornerRadius="6" Background="#111118">
+                                    <Image Source="{x:Bind ImageUri}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" AutomationProperties.Name="{x:Bind FileName}" />
+                                </Border>
+
+                                <!-- Filename -->
+                                <TextBlock Grid.Row="1" Text="{x:Bind FileName}" FontSize="12" FontWeight="SemiBold" Foreground="#e0e0e0" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind FilePath}" Margin="2,4,2,0" />
+
+                                <!-- Card buttons -->
+                                <Grid Grid.Row="2" ColumnSpacing="6" Margin="0,2,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Click="OpenImageButton_Click" DataContext="{x:Bind}" FontSize="11" HorizontalAlignment="Stretch" Padding="4" Height="28" Background="#ffffff08">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="&#xE8A7;" FontFamily="Segoe Fluent Icons" FontSize="11" Foreground="#4fc3f7" />
+                                            <TextBlock Text="View" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="1" Click="CopyPathButton_Click" DataContext="{x:Bind}" FontSize="11" HorizontalAlignment="Stretch" Padding="4" Height="28" Background="#ffffff08">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons" FontSize="11" Foreground="#4caf50" />
+                                            <TextBlock Text="Copy" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+        </Grid>
+
+        <!-- ACTION FOOTER BAR -->
+        <Border Grid.Row="4" x:Name="ActionFooterBorder" Visibility="Collapsed" Background="#0f1924" BorderBrush="#ffffff10" BorderThickness="0,1,0,0" Padding="32,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16">
+                    <Button x:Name="CopyPhotosButton" Click="CopyPhotosButton_Click" Height="40" Padding="18,0" Style="{StaticResource AccentButtonStyle}" Background="#1e88e5" BorderBrush="#42a5f540">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="White" />
+                            <TextBlock Text="Copy Matched Photos" FontWeight="SemiBold" Foreground="White" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="OpenGalleryButton" Click="OpenGalleryButton_Click" Height="40" Padding="18,0" Background="#10b981" BorderBrush="#34d39940">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE774;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="White" />
+                            <TextBlock Text="Open Web Gallery" FontWeight="SemiBold" Foreground="White" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <Button Grid.Column="2" x:Name="CopyPathsButton" Click="CopyPathsButton_Click" Height="40" Padding="16,0" Background="#1c2a38" BorderBrush="#ffffff15">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="#4fc3f7" />
+                        <TextBlock Text="Copy All Paths" FontWeight="SemiBold" Foreground="#4fc3f7" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

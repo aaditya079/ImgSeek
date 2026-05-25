@@ -1,61 +1,91 @@
 # ImgSeek
 
-A Windows tool that **scans any folder of images using OCR** (Windows built-in OCR engine) and finds all photos where a given name or keyword appears — in chat screenshots, Discord messages, captions, etc.
+![ImgSeek Repository Banner](imgseek_github_banner.png)
 
-## Features
+A state-of-the-art Windows utility that **scans directories of images using native hardware OCR** to instantly locate files containing specific text. Perfect for finding names, phrases, or receipts inside chat screenshots, document scans, Discord logs, memes, and photos.
 
-- 🔍 Search any name/keyword across thousands of images instantly
-- 🖼️ Auto-generates a **beautiful HTML gallery** of all matches
-- ⚡ Uses Windows' native OCR engine — no API keys or internet required
-- 📁 Works on any folder, supports PNG, JPG, JPEG, WEBP, BMP
+---
 
-## Requirements
+## 🎥 App Showcase
 
-- Windows 10/11
-- [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+<!-- REPLACE THE GIF BELOW WITH A 30-SECOND RECORDING OF YOUR APP WORKING FOR AN ELITE GITHUB PORTFOLIO -->
+![ImgSeek Showcase Demo](showcase_demo.gif)
 
-## Usage
+*Double-click the `.exe` to open the gorgeous Fluent GUI, or run it via command line to process images in automated headless scripts.*
 
-### Option 1 — Double-click launcher
+---
 
-Run `SearchImagesByName.bat` and follow the prompts:
+## 🌟 Key Features
 
-```
-Enter folder path to scan: C:\Users\you\Pictures
-Enter name to search for: john
-```
+*   **🎨 Stunning WinUI 3 Desktop App**: Implements Microsoft’s latest Fluent Design language natively with rounded corners, Segoe Fluent Icons, a glowing dark theme, and a gorgeous semi-transparent **Mica Backdrop** material.
+*   **🔄 Intelligent Dual-Mode Engine**: 
+    *   **GUI Mode**: Launched without arguments, opening a beautiful interactive window with folder browsing, cancellation support, and a live results grid.
+    *   **CLI Mode**: Launched with arguments, attaching directly to the calling console/terminal (e.g. PowerShell/CMD) for headless, automated scripting and CI/CD pipelines (fully backward compatible).
+*   **⚡ Hardware-Accelerated Local OCR**: Powered by the native Windows `Windows.Media.Ocr` engine. Runs entirely offline with zero internet access, zero external APIs, and zero privacy leaks.
+*   **🖼️ Live Results & Interactive Cards**: As images scan in the background, matching results animate onto your screen in real-time. Copy file paths, view images directly in your system viewer, or perform bulk operations.
+*   **📦 Zero-Dependency Portable Build**: Can be published as a self-contained release that runs anywhere on Windows 10 or 11 out of the box—no .NET runtimes, frameworks, or installers required.
+*   **📁 Web Gallery & Copy Tools**: Export matched images as an interactive HTML gallery with a responsive click-to-enlarge lightbox and dynamic bulk copy batch scripts.
 
-A gallery will automatically open in your browser showing all matched images.
+---
 
-### Option 2 — Command line
+## 🛠️ Portfolio Strategy & Architecture
+
+### 1. Robust Exception Management
+ImgSeek is designed with resilient defensive programming to handle all potential runtime edge cases without breaking the user experience:
+*   **Empty or Non-Existent Folders**: Instantly validated before scanning. Users receive a clean, friendly notification banner rather than generic crash dialogs.
+*   **Permission-Denied Files**: If the system encounters locked system files or folders with denied access, it logs the warning and gracefully bypasses them to continue the scan.
+*   **Corrupted or Unreadable Images**: Files with invalid headers, 0-byte sizes, or unsupported encodings are intercepted and skipped smoothly while preserving scan continuity.
+*   **System OCR Absence**: If the Windows OCR engine is missing or disabled (e.g. customized headless server installs), it displays an educational setup prompt guiding the user to install a Windows Language Pack.
+
+### 2. File Structure
+*   [Program.cs](file:///d:/ImgSeek-main/ImgSeek-main/Program.cs): Dual-mode entry point with native Win32 `AttachConsole` P/Invoke mapping and WinUI 3 bootstrapper orchestration.
+*   [OcrScannerCore.cs](file:///d:/ImgSeek-main/ImgSeek-main/OcrScannerCore.cs): Thread-safe scanning, OCR extraction, and HTML/BAT file export template logic.
+*   [MainWindow.xaml](file:///d:/ImgSeek-main/ImgSeek-main/MainWindow.xaml) & [MainWindow.xaml.cs](file:///d:/ImgSeek-main/ImgSeek-main/MainWindow.xaml.cs): The WinUI 3 presentation layer, containing modern UI controls and async task worker thread dispatchers.
+*   [App.xaml](file:///d:/ImgSeek-main/ImgSeek-main/App.xaml) & [App.xaml.cs](file:///d:/ImgSeek-main/ImgSeek-main/App.xaml.cs): The WinUI 3 application resource and window lifecycle mapping.
+
+---
+
+## 🚀 Getting Started
+
+### Requirements
+*   **OS**: Windows 10 (Build 17763 or later) / Windows 11
+*   **Development**: [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+
+### Run from Source
+1.  Clone the repository and open the terminal inside the root directory.
+2.  Launch the **WinUI 3 GUI**:
+    ```bash
+    dotnet run
+    ```
+3.  Launch the **Command-Line Interface**:
+    ```bash
+    dotnet run -- "C:\path\to\images" "search-keyword"
+    ```
+
+---
+
+## 📦 How to Publish a Self-Contained `.exe` Release
+
+To compile a 100% portable, optimized single-folder distribution of ImgSeek that you can zip and release on GitHub:
 
 ```bash
-dotnet run --project OcrScanner.csproj -c Release -- "C:\path\to\images" "name" "output.html"
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=true
 ```
 
-| Argument | Description |
-|----------|-------------|
-| `C:\path\to\images` | Folder to scan (searched recursively) |
-| `name` | Name/keyword to look for inside images |
-| `output.html` | *(Optional)* Path to save the HTML gallery |
+### What this does:
+*   `-c Release`: Compiles highly optimized production-grade binaries.
+*   `-r win-x64`: Targets 64-bit Windows platforms.
+*   `--self-contained true`: Embeds the complete .NET runtime and Windows App SDK DLLs. The end-user **does not need to install anything** to run it.
+*   `-p:PublishReadyToRun=true`: Ahead-Of-Time (AOT) compiles assembly code to native machine instructions, decreasing startup times by up to 50%!
 
-### 📁 Output Location
+The output will be generated in:
+`bin\Release\net6.0-windows10.0.19041.0\win-x64\publish\`
 
-By default, the generated HTML gallery and the companion `_CopyFiles.bat` script are saved to your Windows Temporary folder:
-`C:\Users\<YourUsername>\AppData\Local\Temp\`
+> [!TIP]
+> Zip the contents of the `publish/` folder and upload it directly as a **GitHub Release**! It is a massive portfolio booster that makes your repository instantly usable by anyone, not just developers.
 
-* **Quick Access**: Press `Win + R`, type `%temp%`, and hit **Enter** to open the directory directly.
-* **Custom Location**: You can optionally specify a custom path for the HTML file as the 3rd command-line argument. The `_CopyFiles.bat` file will be generated in that same custom directory.
+---
 
-## How it works
+## ⚖️ License
 
-1. Recursively finds all image files in the given folder
-2. Runs each image through the **Windows.Media.Ocr** engine
-3. Checks if the extracted text contains your search term
-4. Generates an HTML gallery with click-to-enlarge lightbox for all matches
-
-## Building
-
-```bash
-dotnet build OcrScanner.csproj -c Release
-```
+Distributed under the MIT License. See `LICENSE` for details.
