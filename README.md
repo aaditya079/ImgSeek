@@ -8,8 +8,11 @@ A state-of-the-art Windows utility that **scans directories of images using nati
 
 ## 🎥 App Showcase
 
-<!-- REPLACE THE GIF BELOW WITH A 30-SECOND RECORDING OF YOUR APP WORKING FOR AN ELITE GITHUB PORTFOLIO -->
-![ImgSeek Showcase Demo](showcase_demo.gif)
+> [!TIP]
+> **To add a 30-second Showcase Demo GIF here:**
+> 1. Run `ImgSeek` and perform a search.
+> 2. Capture your screen with a free utility like [ShareX](https://getsharex.com/) or [ScreenToGif](https://www.screentogif.com/).
+> 3. Save the animation as `showcase_demo.gif` in the repository's root folder and push to GitHub! It will automatically load and display your showcase here.
 
 *Double-click the `.exe` to open the gorgeous Fluent GUI, or run it via command line to process images in automated headless scripts.*
 
@@ -79,7 +82,7 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishReadyToRun=
 *   `-p:PublishReadyToRun=true`: Ahead-Of-Time (AOT) compiles assembly code to native machine instructions, decreasing startup times by up to 50%!
 
 The output will be generated in:
-`bin\Release\net6.0-windows10.0.19041.0\win-x64\publish\`
+`bin\Release\<TargetFramework>\win-x64\publish\` (e.g., `bin\Release\net6.0-windows10.0.19041.0\win-x64\publish\`)
 
 > [!TIP]
 > Zip the contents of the `publish/` folder and upload it directly as a **GitHub Release**! It is a massive portfolio booster that makes your repository instantly usable by anyone, not just developers.
