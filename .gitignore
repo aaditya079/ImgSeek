@@ -2,3 +2,9 @@ bin/
 obj/
 *.user
 .vs/
+.vscode/
+*.rar
+*.zip
+publish/
+[Pp]ublish/
+test_output.txt
