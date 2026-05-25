@@ -60,7 +60,10 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="FolderTextBox" Grid.Column="0" Header="Images Location" PlaceholderText="Select the folder path containing images..." VerticalAlignment="Bottom" Height="40" Background="#111118" BorderBrush="#ffffff15" Foreground="White" />
+                    <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="Images Location" FontSize="13" FontWeight="SemiBold" Foreground="#e0e0e0" />
+                        <TextBox x:Name="FolderTextBox" PlaceholderText="Select the folder path containing images..." Height="40" VerticalContentAlignment="Center" Background="#111118" BorderBrush="#ffffff15" Foreground="White" />
+                    </StackPanel>
                     <Button x:Name="BrowseButton" Grid.Column="1" Click="BrowseButton_Click" VerticalAlignment="Bottom" Height="40" Padding="16,0" Style="{StaticResource AccentButtonStyle}" Background="#1e2a3a" BorderBrush="#4fc3f740">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <TextBlock Text="&#xE8B7;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="#4fc3f7" />
@@ -76,7 +79,10 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="SearchTextBox" Grid.Column="0" Header="Search Keyword" PlaceholderText="Enter the text to find inside your images..." VerticalAlignment="Bottom" Height="40" Background="#111118" BorderBrush="#ffffff15" Foreground="White" KeyDown="SearchTextBox_KeyDown" />
+                    <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="Search Keyword" FontSize="13" FontWeight="SemiBold" Foreground="#e0e0e0" />
+                        <TextBox x:Name="SearchTextBox" PlaceholderText="Enter the text to find inside your images..." Height="40" VerticalContentAlignment="Center" Background="#111118" BorderBrush="#ffffff15" Foreground="White" KeyDown="SearchTextBox_KeyDown" />
+                    </StackPanel>
                     <Button x:Name="ScanButton" Grid.Column="1" Click="ScanButton_Click" VerticalAlignment="Bottom" Height="40" Padding="24,0" Style="{StaticResource AccentButtonStyle}">
                         <Button.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">

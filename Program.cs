@@ -29,44 +29,51 @@ public static class Program
     [STAThread]
     static async Task<int> Main(string[] args)
     {
-        // 1. Detect if run from CLI (with arguments) or Desktop GUI (no arguments)
-        if (args.Length > 0)
+        try
         {
-            // Attach to the parent console output and redirect streams
-            if (AttachConsole(ATTACH_PARENT_PROCESS))
+            // 1. Detect if run from CLI (with arguments) or Desktop GUI (no arguments)
+            if (args.Length > 0)
             {
-                var stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-                var stdErr = GetStdHandle(STD_ERROR_HANDLE);
-                SetStdHandle(STD_OUTPUT_HANDLE, stdOut);
-                SetStdHandle(STD_ERROR_HANDLE, stdErr);
+                // Attach to the parent console output and redirect streams
+                if (AttachConsole(ATTACH_PARENT_PROCESS))
+                {
+                    var stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+                    var stdErr = GetStdHandle(STD_ERROR_HANDLE);
+                    SetStdHandle(STD_OUTPUT_HANDLE, stdOut);
+                    SetStdHandle(STD_ERROR_HANDLE, stdErr);
 
-                var writer = new StreamWriter(Console.OpenStandardOutput(), Encoding.UTF8) { AutoFlush = true };
-                Console.SetOut(writer);
-                Console.SetError(writer);
+                    var writer = new StreamWriter(Console.OpenStandardOutput(), Encoding.UTF8) { AutoFlush = true };
+                    Console.SetOut(writer);
+                    Console.SetError(writer);
+                }
+                
+                // Execute in standard command-line mode
+                return await RunCliModeAsync(args);
             }
-            
-            // Execute in standard command-line mode
-            return await RunCliModeAsync(args);
-        }
-        else
-        {
-            // Start the WinUI 3 Desktop GUI
-            try
+            else
             {
+                // Start the WinUI 3 Desktop GUI
                 Microsoft.UI.Xaml.Application.Start((p) =>
                 {
                     var context = new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread());
                     SynchronizationContext.SetSynchronizationContext(context);
                     new ImgSeek.App();
                 });
+                return 0;
             }
-            catch (Exception ex)
+        }
+        catch (Exception ex)
+        {
+            // Write to a local crash log file
+            try
             {
-                // If GUI fails to initialize, show native messagebox (since XAML isn't ready)
-                MessageBox(IntPtr.Zero, $"Failed to start ImgSeek GUI:\n{ex.Message}\n\nYou can run in CLI mode using:\nImgSeek.exe <image-folder> <search-term>", "ImgSeek Startup Error", 0x10); // MB_ICONERROR
-                return 1;
+                string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash_log.txt");
+                File.WriteAllText(logPath, $"CRITICAL CRASH ON STARTUP:\nTime: {DateTime.Now}\nMessage: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}\n\nInner Exception:\n{ex.InnerException?.Message}\n{ex.InnerException?.StackTrace}");
             }
-            return 0;
+            catch { }
+
+            MessageBox(IntPtr.Zero, $"ImgSeek crashed on startup:\n{ex.Message}\n\nCheck crash_log.txt for details.", "ImgSeek Critical Error", 0x10);
+            return 1;
         }
     }
 
