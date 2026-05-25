@@ -8,40 +8,53 @@ A state-of-the-art Windows utility that **scans directories of images using nati
 
 ## 🌟 Key Features
 
-*   **🎨 Stunning WinUI 3 Desktop App**: Implements Microsoft’s latest Fluent Design language natively with rounded corners, Segoe Fluent Icons, a glowing dark theme, and a gorgeous semi-transparent **Mica Backdrop** material.
-*   **🔄 Intelligent Dual-Mode Engine**: 
-    *   **GUI Mode**: Launched without arguments, opening a beautiful interactive window with folder browsing, cancellation support, and a live results grid.
-    *   **CLI Mode**: Launched with arguments, attaching directly to the calling console/terminal (e.g. PowerShell/CMD) for headless, automated scripting and CI/CD pipelines (fully backward compatible).
+*   **🎨 Stunning Dark-Mode Desktop App**: Implements a premium, modern design with a deep navy gradient palette, smooth transition animations, vertical layout alignment, and interactive image hover effects.
 *   **⚡ Hardware-Accelerated Local OCR**: Powered by the native Windows `Windows.Media.Ocr` engine. Runs entirely offline with zero internet access, zero external APIs, and zero privacy leaks.
-*   **🖼️ Live Results & Interactive Cards**: As images scan in the background, matching results animate onto your screen in real-time. Copy file paths, view images directly in your system viewer, or perform bulk operations.
-*   **📦 Zero-Dependency Portable Build**: Can be published as a self-contained release that runs anywhere on Windows 10 or 11 out of the box—no .NET runtimes, frameworks, or installers required.
+*   **🖼️ Real-Time Animated Results**: Matching images animate onto the screen in real-time as the scan progresses. Copy file paths, open files instantly in your system viewer, or perform bulk actions.
+*   **📦 Zero-Dependency Portable Build**: Compiled as a fully self-contained single-file executable (`PublishSingleFile`). It runs instantly on any Windows 10 or 11 system out of the box—no extra runtimes, SDKs, or installations required.
 *   **📁 Web Gallery & Copy Tools**: Export matched images as an interactive HTML gallery with a responsive click-to-enlarge lightbox and dynamic bulk copy batch scripts.
 
 ---
 
-## 🛠️ Portfolio Strategy & Architecture
+## 🚀 How to Run (Getting Started)
+
+ImgSeek can be accessed and run in two extremely simple ways:
+
+### Step 1: Interactive Desktop App (GUI Mode) 🎨
+Launch the modern desktop application to browse folders, see real-time progress, and view image result cards interactively.
+
+1. Navigate to: **`ImgSeek-WPF/publish/`**
+2. Double-click **`ImgSeek.exe`**
+3. Choose a folder to scan, enter your search term, and click **Scan**!
+   > [!NOTE]
+   > The app is built as a single-file executable, meaning you can copy `ImgSeek.exe` anywhere (like your Desktop) and run it standalone.
+
+### Step 2: Quick Command-Line Script (CLI Mode) ⚡
+Run a fast, lightweight scan directly from your terminal using our pre-configured helper script.
+
+1. Navigate to the root directory.
+2. Double-click or run **`SearchImagesByName.bat`** from CMD/PowerShell.
+3. Enter your folder path and keyword when prompted to view search matches directly in the terminal!
+
+---
+
+## 🛠️ Architecture & Robust Design
 
 ### 1. Robust Exception Management
 ImgSeek is designed with resilient defensive programming to handle all potential runtime edge cases without breaking the user experience:
 *   **Empty or Non-Existent Folders**: Instantly validated before scanning. Users receive a clean, friendly notification banner rather than generic crash dialogs.
 *   **Permission-Denied Files**: If the system encounters locked system files or folders with denied access, it logs the warning and gracefully bypasses them to continue the scan.
 *   **Corrupted or Unreadable Images**: Files with invalid headers, 0-byte sizes, or unsupported encodings are intercepted and skipped smoothly while preserving scan continuity.
-*   **System OCR Absence**: If the Windows OCR engine is missing or disabled (e.g. customized headless server installs), it displays an educational setup prompt guiding the user to install a Windows Language Pack.
+*   **System OCR Absence**: If the Windows OCR engine is missing or disabled, it displays an educational setup prompt guiding the user to install a Windows Language Pack.
 
-### 2. File Structure
-*   [Program.cs](file:///d:/ImgSeek-main/ImgSeek-main/Program.cs): Dual-mode entry point with native Win32 `AttachConsole` P/Invoke mapping and WinUI 3 bootstrapper orchestration.
-*   [OcrScannerCore.cs](file:///d:/ImgSeek-main/ImgSeek-main/OcrScannerCore.cs): Thread-safe scanning, OCR extraction, and HTML/BAT file export template logic.
-*   [MainWindow.xaml](file:///d:/ImgSeek-main/ImgSeek-main/MainWindow.xaml) & [MainWindow.xaml.cs](file:///d:/ImgSeek-main/ImgSeek-main/MainWindow.xaml.cs): The WinUI 3 presentation layer, containing modern UI controls and async task worker thread dispatchers.
-*   [App.xaml](file:///d:/ImgSeek-main/ImgSeek-main/App.xaml) & [App.xaml.cs](file:///d:/ImgSeek-main/ImgSeek-main/App.xaml.cs): The WinUI 3 application resource and window lifecycle mapping.
+### 2. Project File Structure
+*   **`SearchImagesByName.bat`**: Convenient command-line entry script that runs console scans.
+*   **`ImgSeek-WPF/`**: The modern desktop application codebase:
+    *   [MainWindow.xaml](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/MainWindow.xaml) & [MainWindow.xaml.cs](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/MainWindow.xaml.cs): Premium UI design, styling, and async task orchestrations.
+    *   [OcrScannerCore.cs](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/OcrScannerCore.cs): High-performance thread-safe offline OCR scanner.
+    *   [ImgSeek.csproj](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/ImgSeek.csproj): Single-file self-contained compilation configuration.
 
 ---
-
-## 🚀 Getting Started
-
-### Requirements
-*   **OS**: Windows 10 (Build 17763 or later) / Windows 11
-*   **Development**: [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
-
 
 ## ⚖️ License
 
