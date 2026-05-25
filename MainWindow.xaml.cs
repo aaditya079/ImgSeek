@@ -27,16 +27,28 @@ namespace ImgSeek
         private string _activeSearchFolder = "";
         private string _activeSearchTerm = "";
 
+        private bool _isResized = false;
+
         public MainWindow()
         {
             this.InitializeComponent();
             ResultsGridView.ItemsSource = _matchedImages;
 
-            // Set default window size programmatically for unpackaged WinUI 3 Window
-            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            Microsoft.UI.WindowId windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
-            Microsoft.UI.Windowing.AppWindow appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
-            appWindow.Resize(new Windows.Graphics.SizeInt32(1050, 780));
+            this.Activated += MainWindow_Activated;
+        }
+
+        private void MainWindow_Activated(object sender, WindowActivatedEventArgs e)
+        {
+            if (!_isResized)
+            {
+                _isResized = true;
+
+                // Set default window size programmatically for unpackaged WinUI 3 Window
+                IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                Microsoft.UI.WindowId windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
+                Microsoft.UI.Windowing.AppWindow appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
+                appWindow.Resize(new Windows.Graphics.SizeInt32(1050, 780));
+            }
         }
 
         // ─── Browse Folder Event ─────────────────────────────────────────────────

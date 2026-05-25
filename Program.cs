@@ -13,7 +13,15 @@ public static class Program
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool AttachConsole(int dwProcessId);
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool SetStdHandle(int nStdHandle, IntPtr hHandle);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr GetStdHandle(int nStdHandle);
+
     private const int ATTACH_PARENT_PROCESS = -1;
+    private const int STD_OUTPUT_HANDLE = -11;
+    private const int STD_ERROR_HANDLE = -12;
 
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
     private static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
@@ -24,8 +32,18 @@ public static class Program
         // 1. Detect if run from CLI (with arguments) or Desktop GUI (no arguments)
         if (args.Length > 0)
         {
-            // Attach to the parent console output
-            AttachConsole(ATTACH_PARENT_PROCESS);
+            // Attach to the parent console output and redirect streams
+            if (AttachConsole(ATTACH_PARENT_PROCESS))
+            {
+                var stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+                var stdErr = GetStdHandle(STD_ERROR_HANDLE);
+                SetStdHandle(STD_OUTPUT_HANDLE, stdOut);
+                SetStdHandle(STD_ERROR_HANDLE, stdErr);
+
+                var writer = new StreamWriter(Console.OpenStandardOutput(), Encoding.UTF8) { AutoFlush = true };
+                Console.SetOut(writer);
+                Console.SetError(writer);
+            }
             
             // Execute in standard command-line mode
             return await RunCliModeAsync(args);
@@ -35,9 +53,6 @@ public static class Program
             // Start the WinUI 3 Desktop GUI
             try
             {
-                // Manually initialize the Windows App SDK bootstrapper (loads self-contained runtime DLLs)
-                Bootstrap.Initialize(0x00020001); // 2.1
-                
                 Microsoft.UI.Xaml.Application.Start((p) =>
                 {
                     var context = new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread());
@@ -48,12 +63,8 @@ public static class Program
             catch (Exception ex)
             {
                 // If GUI fails to initialize, show native messagebox (since XAML isn't ready)
-                MessageBox(IntPtr.Zero, $"Failed to start ImgSeek GUI:\n{ex.Message}\n\nYou can run in CLI mode using:\nOcrScanner.exe <image-folder> <search-term>", "ImgSeek Startup Error", 0x10); // MB_ICONERROR
+                MessageBox(IntPtr.Zero, $"Failed to start ImgSeek GUI:\n{ex.Message}\n\nYou can run in CLI mode using:\nImgSeek.exe <image-folder> <search-term>", "ImgSeek Startup Error", 0x10); // MB_ICONERROR
                 return 1;
-            }
-            finally
-            {
-                Bootstrap.Shutdown();
             }
             return 0;
         }
