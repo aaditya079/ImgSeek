@@ -57,12 +57,13 @@
         <!-- TextBox -->
         <Style x:Key="InputBox" TargetType="TextBox">
             <Setter Property="Background" Value="#131929"/>
-            <Setter Property="Foreground" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
             <Setter Property="CaretBrush" Value="#60A5FA"/>
-            <Setter Property="BorderBrush" Value="#FFFFFF1A"/>
+            <Setter Property="SelectionBrush" Value="#3B82F6"/>
+            <Setter Property="BorderBrush" Value="#FFFFFF2A"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="14,10"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="14,0,14,0"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -70,14 +71,18 @@
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
                                 CornerRadius="9">
-                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Focusable="False"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollBarVisibility="Hidden"
                                           VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="True">
                                 <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
-                                <Setter TargetName="Bd" Property="Background" Value="#1E293B"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#1A2744"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
