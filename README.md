@@ -2,6 +2,12 @@
 
 ![ImgSeek Repository Banner](imgseek_github_banner.png)
 
+<div align="center">
+
+[![Download Portable GUI](https://img.shields.io/badge/Download-ImgSeek.exe%20(Portable)-007acc?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/aaditya079/ImgSeek/releases/latest)
+
+</div>
+
 A state-of-the-art Windows utility that **scans directories of images using native hardware OCR** to instantly locate files containing specific text. Perfect for finding names, phrases, or receipts inside chat screenshots, document scans, Discord logs, memes, and photos.
 
 ---
@@ -23,11 +29,13 @@ ImgSeek can be accessed and run in two extremely simple ways:
 ### Step 1: Interactive Desktop App (GUI Mode) 🎨
 Launch the modern desktop application to browse folders, see real-time progress, and view image result cards interactively.
 
-1. Navigate to: **`ImgSeek-WPF/publish/`**
-2. Double-click **`ImgSeek.exe`**
+1. Go to the [**Latest GitHub Releases**](https://github.com/aaditya079/ImgSeek/releases/latest).
+2. Download and double-click the portable **`ImgSeek.exe`**.
 3. Choose a folder to scan, enter your search term, and click **Scan**!
-   > [!NOTE]
-   > The app is built as a single-file executable, meaning you can copy `ImgSeek.exe` anywhere (like your Desktop) and run it standalone.
+   > [!TIP]
+   > The app is built as a single-file executable, meaning you can copy `ImgSeek.exe` anywhere (like your Desktop or USB drive) and run it standalone.
+   > 
+   > *If you prefer to compile it yourself: open terminal in `ImgSeek-WPF/` and run `dotnet publish -c Release -r win-x64 --self-contained true`.*
 
 ### Step 2: Quick Command-Line Script (CLI Mode) ⚡
 Run a fast, lightweight scan directly from your terminal using our pre-configured helper script.
