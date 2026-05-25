@@ -42,18 +42,6 @@ ImgSeek is designed with resilient defensive programming to handle all potential
 *   **OS**: Windows 10 (Build 17763 or later) / Windows 11
 *   **Development**: [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
 
-### Run from Source
-1.  Clone the repository and open the terminal inside the root directory.
-2.  Launch the **WinUI 3 GUI**:
-    ```bash
-    dotnet run
-    ```
-3.  Launch the **Command-Line Interface**:
-    ```bash
-    dotnet run -- "C:\path\to\images" "search-keyword"
-    ```
-
----
 
 ## ⚖️ License
 
