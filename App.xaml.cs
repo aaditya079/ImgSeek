@@ -1,20 +1,14 @@
-using Microsoft.UI.Xaml;
+using System.Windows;
 
 namespace ImgSeek
 {
     public partial class App : Application
     {
-        private Window? m_window;
-
-        public App()
+        protected override void OnStartup(StartupEventArgs e)
         {
-            this.InitializeComponent();
-        }
-
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
-        {
-            m_window = new MainWindow();
-            m_window.Activate();
+            base.OnStartup(e);
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
         }
     }
 }

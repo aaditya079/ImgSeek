@@ -9,6 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <StartupObject>ImgSeek.Program</StartupObject>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>

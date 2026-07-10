@@ -11,7 +11,7 @@ echo.
 
 REM -- Resolve script directory (always correct even if run from another folder) --
 set "SCRIPT_DIR=%~dp0"
-set "CSPROJ=%SCRIPT_DIR%OcrScanner.csproj"
+set "CSPROJ=%SCRIPT_DIR%ImgSeek.csproj"
 
 REM -- Check the project file exists --
 if not exist "%CSPROJ%" (
@@ -25,7 +25,7 @@ if not exist "%CSPROJ%" (
 )
 
 REM -- Locate the built EXE --
-set "EXE=%SCRIPT_DIR%bin\Release\net6.0-windows10.0.19041.0\win-x64\ImgSeek.exe"
+set "EXE=%SCRIPT_DIR%bin\Release\net8.0-windows10.0.19041.0\win-x64\ImgSeek.exe"
 
 if not exist "%EXE%" (
     echo ImgSeek.exe not found at:
@@ -39,8 +39,8 @@ if not exist "%EXE%" (
     if errorlevel 1 (
         echo ERROR: dotnet is not installed or not on PATH.
         echo.
-        echo Download .NET 6 SDK from:
-        echo   https://dotnet.microsoft.com/download/dotnet/6.0
+        echo Download .NET 8 SDK from:
+        echo   https://dotnet.microsoft.com/download/dotnet/8.0
         echo.
         pause
         exit /b 1
