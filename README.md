@@ -35,7 +35,7 @@ Launch the desktop application to browse folders, see real-time progress, and vi
    > [!TIP]
    > The app is built as a single-file executable, meaning you can copy `ImgSeek.exe` anywhere (like your Desktop or USB drive) and run it standalone.
    > 
-   > *If you prefer to compile it yourself: open the terminal in `ImgSeek-WPF/` and run `dotnet publish -c Release -r win-x64 --self-contained true`.*
+   > *If you prefer to compile it yourself: open the terminal in the root directory and run `dotnet publish -c Release -r win-x64 --self-contained true`.*
 
 ### 2. Quick Command-Line Script (CLI Mode) ⚡
 Run a fast scan directly from your terminal using our pre-configured helper script.
@@ -57,10 +57,11 @@ The application handles common runtime issues gracefully without crashing or int
 
 ### 2. Project File Structure
 *   **`SearchImagesByName.bat`**: Convenient command-line entry script that runs console scans.
-*   **`ImgSeek-WPF/`**: The desktop application code:
-    *   [MainWindow.xaml](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/MainWindow.xaml) & [MainWindow.xaml.cs](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/MainWindow.xaml.cs): UI layout, styling, and async search task orchestration.
-    *   [OcrScannerCore.cs](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/OcrScannerCore.cs): Core OCR scanning logic.
-    *   [ImgSeek.csproj](file:///d:/ImgSeek-main/ImgSeek-main/ImgSeek-WPF/ImgSeek.csproj): Project build configuration.
+*   **`Program.cs`**: Hybrid application entry point that detects CLI arguments, handles terminal output, or boots the GUI.
+*   **`App.xaml` & `App.xaml.cs`**: WPF application startup configuration.
+*   **`MainWindow.xaml` & `MainWindow.xaml.cs`**: GUI layout, dark theme styling, and async search task orchestration.
+*   **`OcrScannerCore.cs`**: Shared core OCR engine scanning logic and helper methods to build HTML galleries.
+*   **`ImgSeek.csproj`**: Project build configuration.
 
 ---
 
