@@ -4,7 +4,8 @@
         Title="ImgSeek" Height="820" Width="1100"
         MinHeight="620" MinWidth="860"
         Background="#0A0E1A" FontFamily="Segoe UI"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Icon="imgseek_icon.png">
 
     <Window.Resources>
         <!-- Smooth color animation helper -->
