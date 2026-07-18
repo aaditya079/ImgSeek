@@ -23,6 +23,15 @@ namespace ImgSeek
         public MainWindow()
         {
             InitializeComponent();
+            
+            // Set Window Icon Safely
+            try
+            {
+                var iconUri = new Uri("pack://application:,,,/imgseek_icon.png", UriKind.RelativeOrAbsolute);
+                Icon = BitmapFrame.Create(iconUri);
+            }
+            catch { }
+
             WireHints(FolderBox, FolderHintTb);
             WireHints(SearchBox, SearchHintTb);
 

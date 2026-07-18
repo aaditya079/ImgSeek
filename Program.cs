@@ -49,10 +49,21 @@ namespace ImgSeek
                 try
                 {
                     File.AppendAllText(tempLogPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Launching WPF application...\n");
+                    var app = new App();
+                    app.Run();
                 }
-                catch { }
-                var app = new App();
-                app.Run();
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        File.AppendAllText(tempLogPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CRITICAL ERROR: {ex.Message}\n{ex.StackTrace}\n");
+                        if (ex.InnerException != null)
+                        {
+                            File.AppendAllText(tempLogPath, $"INNER ERROR: {ex.InnerException.Message}\n{ex.InnerException.StackTrace}\n");
+                        }
+                    }
+                    catch { }
+                }
             }
         }
 
