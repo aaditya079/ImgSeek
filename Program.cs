@@ -130,12 +130,24 @@ namespace ImgSeek
                 return 1;
             }
 
-            if (!Directory.Exists(imageDir))
+            var folders = imageDir.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (folders.Length == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("\nERROR: Directory not found: " + imageDir);
+                Console.Error.WriteLine("\nERROR: No folders specified to scan.");
                 Console.ResetColor();
                 return 1;
+            }
+
+            foreach (var f in folders)
+            {
+                if (!Directory.Exists(f))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Error.WriteLine("\nERROR: Directory not found: " + f);
+                    Console.ResetColor();
+                    return 1;
+                }
             }
 
             Console.ForegroundColor = ConsoleColor.Cyan;

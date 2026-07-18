@@ -40,18 +40,23 @@ namespace ImgSeek
         {
             var matches = new List<string>();
 
-            if (!Directory.Exists(imageDir))
-                throw new DirectoryNotFoundException($"Directory not found: {imageDir}");
-
             var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 { ".png", ".jpg", ".jpeg", ".webp", ".bmp" };
 
             var allImages = new List<string>();
-            foreach (var file in Directory.GetFiles(imageDir, "*.*", SearchOption.AllDirectories))
+            var dirs = imageDir.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            
+            foreach (var dir in dirs)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (extensions.Contains(Path.GetExtension(file)))
-                    allImages.Add(file);
+                if (!Directory.Exists(dir))
+                    throw new DirectoryNotFoundException($"Directory not found: {dir}");
+
+                foreach (var file in Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (extensions.Contains(Path.GetExtension(file)))
+                        allImages.Add(file);
+                }
             }
 
             if (allImages.Count == 0) return matches;

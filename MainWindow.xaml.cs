@@ -76,7 +76,16 @@ namespace ImgSeek
         {
             var dlg = new Microsoft.Win32.OpenFolderDialog { Title = "Select folder to scan" };
             if (dlg.ShowDialog(this) == true)
-                FolderBox.Text = dlg.FolderName;
+            {
+                if (string.IsNullOrWhiteSpace(FolderBox.Text))
+                {
+                    FolderBox.Text = dlg.FolderName;
+                }
+                else
+                {
+                    FolderBox.Text = FolderBox.Text.TrimEnd(';') + ";" + dlg.FolderName;
+                }
+            }
         }
 
         // ── Scan ─────────────────────────────────────────────────────────────────
@@ -91,8 +100,12 @@ namespace ImgSeek
             string folder = GetInput(FolderBox);
             string term   = GetInput(SearchBox);
 
-            if (string.IsNullOrWhiteSpace(folder)) { ShowMsg("⚠  Please enter a folder path to scan.", error: true); return; }
-            if (!Directory.Exists(folder))           { ShowMsg($"⚠  Folder not found: {folder}", error: true); return; }
+            var folders = folder.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (folders.Length == 0) { ShowMsg("⚠  Please enter a folder path to scan.", error: true); return; }
+            foreach (var f in folders)
+            {
+                if (!Directory.Exists(f)) { ShowMsg($"⚠  Folder not found: {f}", error: true); return; }
+            }
             if (string.IsNullOrWhiteSpace(term))     { ShowMsg("⚠  Please enter a search keyword.", error: true); return; }
 
             HideMsg();
@@ -376,23 +389,36 @@ namespace ImgSeek
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if (files.Length > 0)
+                var validFolders = new List<string>();
+                foreach (var path in files)
                 {
-                    string path = files[0];
                     if (Directory.Exists(path))
                     {
-                        FolderBox.Text = path;
-                        ShowMsg($"📁 Loaded folder via drag & drop: {path}", error: false);
+                        if (!validFolders.Contains(path))
+                            validFolders.Add(path);
                     }
                     else if (File.Exists(path))
                     {
                         string? dir = Path.GetDirectoryName(path);
-                        if (!string.IsNullOrEmpty(dir))
+                        if (!string.IsNullOrEmpty(dir) && !validFolders.Contains(dir))
                         {
-                            FolderBox.Text = dir;
-                            ShowMsg($"📁 Loaded folder containing file: {dir}", error: false);
+                            validFolders.Add(dir);
                         }
                     }
+                }
+
+                if (validFolders.Count > 0)
+                {
+                    string joined = string.Join(";", validFolders);
+                    if (string.IsNullOrWhiteSpace(FolderBox.Text))
+                    {
+                        FolderBox.Text = joined;
+                    }
+                    else
+                    {
+                        FolderBox.Text = FolderBox.Text.TrimEnd(';') + ";" + joined;
+                    }
+                    ShowMsg($"📁 Loaded {validFolders.Count} folder(s) via drag & drop.", error: false);
                 }
             }
         }
