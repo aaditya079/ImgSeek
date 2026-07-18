@@ -21,11 +21,20 @@ namespace ImgSeek
         public string? ErrorMessage { get; set; }
     }
 
+    public class ScanOptions
+    {
+        public bool CaseSensitive { get; set; }
+        public bool UseRegex { get; set; }
+        public string? LanguageTag { get; set; }
+        public int MaxDegreeOfParallelism { get; set; } = Environment.ProcessorCount;
+    }
+
     public static class OcrScannerCore
     {
         public static async Task<List<string>> RunScanAsync(
             string imageDir,
             string searchTerm,
+            ScanOptions options,
             IProgress<ScanProgress> progress,
             CancellationToken cancellationToken)
         {
@@ -47,41 +56,112 @@ namespace ImgSeek
 
             if (allImages.Count == 0) return matches;
 
-            var engine = OcrEngine.TryCreateFromUserProfileLanguages()
-                ?? throw new InvalidOperationException("Could not create Windows OCR engine. Ensure a Windows Language Pack with OCR support is installed.");
-
+            // Prepare search term matching helper
+            System.Text.RegularExpressions.Regex? regex = null;
             string termLower = searchTerm.ToLower();
+            if (options.UseRegex)
+            {
+                var regexOptions = options.CaseSensitive
+                    ? System.Text.RegularExpressions.RegexOptions.None
+                    : System.Text.RegularExpressions.RegexOptions.IgnoreCase;
+                regex = new System.Text.RegularExpressions.Regex(searchTerm, regexOptions);
+            }
+
             int current = 0;
+            int total = allImages.Count;
+
+            // Determine target language
+            Windows.Globalization.Language? targetLanguage = null;
+            if (!string.IsNullOrEmpty(options.LanguageTag))
+            {
+                targetLanguage = new Windows.Globalization.Language(options.LanguageTag);
+            }
+
+            int dop = options.MaxDegreeOfParallelism > 0 ? options.MaxDegreeOfParallelism : Environment.ProcessorCount;
+            using var semaphore = new SemaphoreSlim(dop);
+            var tasks = new List<Task>();
 
             foreach (var imgPath in allImages)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                current++;
-                string name = Path.GetFileName(imgPath);
 
-                progress.Report(new ScanProgress { Current = current, Total = allImages.Count, CurrentFile = name });
-
-                try
+                tasks.Add(Task.Run(async () =>
                 {
-                    string fullPath = Path.GetFullPath(imgPath);
-                    var storageFile = await StorageFile.GetFileFromPathAsync(fullPath);
-                    using var stream = await storageFile.OpenAsync(FileAccessMode.Read);
-                    var decoder = await BitmapDecoder.CreateAsync(stream);
-                    var bitmap = await decoder.GetSoftwareBitmapAsync();
-                    var result = await engine.RecognizeAsync(bitmap);
-
-                    if (result.Text.ToLower().Contains(termLower))
+                    await semaphore.WaitAsync(cancellationToken);
+                    try
                     {
-                        matches.Add(fullPath);
-                        progress.Report(new ScanProgress { Current = current, Total = allImages.Count, CurrentFile = name, IsMatch = true, MatchPath = fullPath });
+                        cancellationToken.ThrowIfCancellationRequested();
+                        int thisIndex = Interlocked.Increment(ref current);
+                        string name = Path.GetFileName(imgPath);
+
+                        // Initial report for reading progress
+                        progress.Report(new ScanProgress { Current = thisIndex, Total = total, CurrentFile = name });
+
+                        string fullPath = Path.GetFullPath(imgPath);
+                        var storageFile = await StorageFile.GetFileFromPathAsync(fullPath);
+                        using var stream = await storageFile.OpenAsync(FileAccessMode.Read);
+                        var decoder = await BitmapDecoder.CreateAsync(stream);
+                        var bitmap = await decoder.GetSoftwareBitmapAsync();
+
+                        // Instantiate local OcrEngine for thread safety
+                        OcrEngine? engine = null;
+                        if (targetLanguage != null && OcrEngine.IsLanguageSupported(targetLanguage))
+                        {
+                            engine = OcrEngine.TryCreateFromLanguage(targetLanguage);
+                        }
+                        
+                        if (engine == null)
+                        {
+                            engine = OcrEngine.TryCreateFromUserProfileLanguages();
+                        }
+
+                        if (engine == null)
+                        {
+                            throw new InvalidOperationException("Could not create Windows OCR engine. Ensure a Windows Language Pack with OCR support is installed.");
+                        }
+
+                        var result = await engine.RecognizeAsync(bitmap);
+                        bool isMatch = false;
+
+                        if (options.UseRegex && regex != null)
+                        {
+                            isMatch = regex.IsMatch(result.Text);
+                        }
+                        else
+                        {
+                            if (options.CaseSensitive)
+                            {
+                                isMatch = result.Text.Contains(searchTerm);
+                            }
+                            else
+                            {
+                                isMatch = result.Text.ToLower().Contains(termLower);
+                            }
+                        }
+
+                        if (isMatch)
+                        {
+                            lock (matches)
+                            {
+                                matches.Add(fullPath);
+                            }
+                            progress.Report(new ScanProgress { Current = thisIndex, Total = total, CurrentFile = name, IsMatch = true, MatchPath = fullPath });
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    progress.Report(new ScanProgress { Current = current, Total = allImages.Count, CurrentFile = name, ErrorMessage = ex.Message });
-                }
+                    catch (Exception ex)
+                    {
+                        int thisIndex = Interlocked.CompareExchange(ref current, 0, 0);
+                        string name = Path.GetFileName(imgPath);
+                        progress.Report(new ScanProgress { Current = thisIndex, Total = total, CurrentFile = name, ErrorMessage = ex.Message });
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                }, cancellationToken));
             }
 
+            await Task.WhenAll(tasks);
             return matches;
         }
 

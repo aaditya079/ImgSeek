@@ -137,6 +137,50 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Sleek CheckBox Style -->
+        <Style x:Key="SleekCheck" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,24,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Dark ComboBox Style -->
+        <Style x:Key="DarkComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="#131929"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#FFFFFF2A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="#131929"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="8,4"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1E293B"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#3B82F6"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -196,64 +240,92 @@
         <!-- ══════════════════ SEARCH BAR ══════════════════ -->
         <Border Grid.Row="1" Background="#0D1117" Padding="28,14">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="8"/>
-                    <ColumnDefinition Width="90"/>
-                    <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="220"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="8"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <!-- Folder path -->
-                <Grid Grid.Column="0">
-                    <TextBox x:Name="FolderBox" Style="{StaticResource InputBox}" Height="42"/>
-                    <TextBlock x:Name="FolderHintTb" Text="📁  Folder to scan…" IsHitTestVisible="False"
-                               Foreground="#374151" FontSize="13" Margin="15,0,0,0"
-                               VerticalAlignment="Center"/>
+                <!-- Input Row -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Folder path -->
+                    <Grid Grid.Column="0">
+                        <TextBox x:Name="FolderBox" Style="{StaticResource InputBox}" Height="42"/>
+                        <TextBlock x:Name="FolderHintTb" Text="📁  Folder to scan…" IsHitTestVisible="False"
+                                   Foreground="#374151" FontSize="13" Margin="15,0,0,0"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <Button Grid.Column="2" Content="Browse" Height="42"
+                            Style="{StaticResource BtnBase}" Background="#1E293B"
+                            Foreground="#94A3B8" Click="Browse_Click"/>
+
+                    <!-- Search term -->
+                    <Grid Grid.Column="4">
+                        <TextBox x:Name="SearchBox" Style="{StaticResource InputBox}" Height="42"
+                                 KeyDown="SearchBox_KeyDown"/>
+                        <TextBlock x:Name="SearchHintTb" Text="🔤  Name or keyword…" IsHitTestVisible="False"
+                                   Foreground="#374151" FontSize="13" Margin="15,0,0,0"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Scan -->
+                    <Button x:Name="ScanBtn" Grid.Column="6" Height="42"
+                            Style="{StaticResource BtnBase}" Click="Scan_Click" Padding="22,10">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#3B82F6" Offset="0"/>
+                                <GradientStop Color="#6366F1" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⚡" Margin="0,0,6,0"/>
+                            <TextBlock Text="Scan"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Cancel -->
+                    <Button x:Name="CancelBtn" Grid.Column="8" Height="42"
+                            Style="{StaticResource BtnBase}" IsEnabled="False"
+                            Click="Cancel_Click" Padding="16,10"
+                            Background="#1F1010" Foreground="#F87171">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="✕" Margin="0,0,6,0"/>
+                            <TextBlock Text="Cancel"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
 
-                <Button Grid.Column="2" Content="Browse" Height="42"
-                        Style="{StaticResource BtnBase}" Background="#1E293B"
-                        Foreground="#94A3B8" Click="Browse_Click"/>
+                <!-- Options Row -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- Search term -->
-                <Grid Grid.Column="4">
-                    <TextBox x:Name="SearchBox" Style="{StaticResource InputBox}" Height="42"
-                             KeyDown="SearchBox_KeyDown"/>
-                    <TextBlock x:Name="SearchHintTb" Text="🔤  Name or keyword…" IsHitTestVisible="False"
-                               Foreground="#374151" FontSize="13" Margin="15,0,0,0"
-                               VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="0" Text="Language:" Foreground="#64748B" FontSize="13" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="LanguageSelect" Grid.Column="2" Style="{StaticResource DarkComboBox}" VerticalAlignment="Center" Width="180"/>
+
+                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                        <CheckBox x:Name="CaseSensitiveCheck" Content="Match Case" Style="{StaticResource SleekCheck}"/>
+                        <CheckBox x:Name="RegexCheck" Content="Use Regex" Style="{StaticResource SleekCheck}"/>
+                    </StackPanel>
                 </Grid>
-
-                <!-- Scan -->
-                <Button x:Name="ScanBtn" Grid.Column="6" Height="42"
-                        Style="{StaticResource BtnBase}" Click="Scan_Click" Padding="22,10">
-                    <Button.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#3B82F6" Offset="0"/>
-                            <GradientStop Color="#6366F1" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Button.Background>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="⚡" Margin="0,0,6,0"/>
-                        <TextBlock Text="Scan"/>
-                    </StackPanel>
-                </Button>
-
-                <!-- Cancel -->
-                <Button x:Name="CancelBtn" Grid.Column="8" Height="42"
-                        Style="{StaticResource BtnBase}" IsEnabled="False"
-                        Click="Cancel_Click" Padding="16,10"
-                        Background="#1F1010" Foreground="#F87171">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="✕" Margin="0,0,6,0"/>
-                        <TextBlock Text="Cancel"/>
-                    </StackPanel>
-                </Button>
             </Grid>
         </Border>
 
@@ -342,11 +414,20 @@
                         </Button.Background>
                     </Button>
                     <Button Content="🌐  Open HTML Gallery" Click="OpenGallery_Click"
-                            Style="{StaticResource BtnBase}" Padding="18,10">
+                            Style="{StaticResource BtnBase}" Margin="0,0,10,0" Padding="18,10">
                         <Button.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                 <GradientStop Color="#059669" Offset="0"/>
                                 <GradientStop Color="#0D9488" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                    <Button Content="📥  Export Matches…" Click="ExportMatches_Click"
+                            Style="{StaticResource BtnBase}" Padding="18,10">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#4F46E5" Offset="0"/>
+                                <GradientStop Color="#7C3AED" Offset="1"/>
                             </LinearGradientBrush>
                         </Button.Background>
                     </Button>

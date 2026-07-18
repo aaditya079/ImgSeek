@@ -80,14 +80,52 @@ namespace ImgSeek
 
         private static async Task<int> RunCliModeAsync(string[] args)
         {
-            string imageDir   = args.Length > 0 ? args[0] : "";
-            string searchTerm = args.Length > 1 ? args[1] : "";
-            string outputHtml = args.Length > 2 ? args[2] : "";
+            string imageDir = "";
+            string searchTerm = "";
+            string outputHtml = "";
+
+            var options = new ScanOptions();
+            var positionalArgs = new List<string>();
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                string arg = args[i];
+                if (arg.Equals("--case-sensitive", StringComparison.OrdinalIgnoreCase) || arg.Equals("-c", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.CaseSensitive = true;
+                }
+                else if (arg.Equals("--regex", StringComparison.OrdinalIgnoreCase) || arg.Equals("-r", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.UseRegex = true;
+                }
+                else if ((arg.Equals("--lang", StringComparison.OrdinalIgnoreCase) || arg.Equals("-l", StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length)
+                {
+                    options.LanguageTag = args[++i];
+                }
+                else if ((arg.Equals("--threads", StringComparison.OrdinalIgnoreCase) || arg.Equals("-t", StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length)
+                {
+                    if (int.TryParse(args[++i], out int threads))
+                        options.MaxDegreeOfParallelism = threads;
+                }
+                else
+                {
+                    positionalArgs.Add(arg);
+                }
+            }
+
+            if (positionalArgs.Count > 0) imageDir = positionalArgs[0];
+            if (positionalArgs.Count > 1) searchTerm = positionalArgs[1];
+            if (positionalArgs.Count > 2) outputHtml = positionalArgs[2];
 
             if (string.IsNullOrWhiteSpace(imageDir) || string.IsNullOrWhiteSpace(searchTerm))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("\nUsage: ImgSeek <image-folder> <search-term> [output.html]");
+                Console.Error.WriteLine("\nUsage: ImgSeek <image-folder> <search-term> [output.html] [options]");
+                Console.Error.WriteLine("\nOptions:");
+                Console.Error.WriteLine("  -c, --case-sensitive   Enable case-sensitive keyword matching");
+                Console.Error.WriteLine("  -r, --regex            Search using Regular Expressions");
+                Console.Error.WriteLine("  -l, --lang <tag>       OCR language tag (e.g. en-US, de-DE)");
+                Console.Error.WriteLine("  -t, --threads <num>    Maximum concurrent OCR worker threads");
                 Console.ResetColor();
                 return 1;
             }
@@ -105,6 +143,7 @@ namespace ImgSeek
             Console.ResetColor();
             Console.WriteLine("  Folder : " + imageDir);
             Console.WriteLine("  Keyword: \"" + searchTerm + "\"");
+            Console.WriteLine($"  Options: CaseSensitive={options.CaseSensitive}, UseRegex={options.UseRegex}, Lang={options.LanguageTag ?? "Auto"}, Threads={options.MaxDegreeOfParallelism}");
             Console.WriteLine();
 
             var matches = new List<string>();
@@ -133,7 +172,7 @@ namespace ImgSeek
 
             try
             {
-                matches = await OcrScannerCore.RunScanAsync(imageDir, searchTerm, progress, CancellationToken.None);
+                matches = await OcrScannerCore.RunScanAsync(imageDir, searchTerm, options, progress, CancellationToken.None);
             }
             catch (Exception ex)
             {

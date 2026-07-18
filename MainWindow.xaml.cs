@@ -25,6 +25,39 @@ namespace ImgSeek
             InitializeComponent();
             WireHints(FolderBox, FolderHintTb);
             WireHints(SearchBox, SearchHintTb);
+
+            // Register drag & drop
+            AllowDrop = true;
+            DragOver += MainWindow_DragOver;
+            Drop += MainWindow_Drop;
+
+            // Load OCR Languages
+            LoadOcrLanguages();
+        }
+
+        private void LoadOcrLanguages()
+        {
+            try
+            {
+                var languages = Windows.Media.Ocr.OcrEngine.AvailableRecognizerLanguages;
+                LanguageSelect.Items.Clear();
+                LanguageSelect.Items.Add(new ComboBoxItem { Content = "Default (Auto)", Tag = "" });
+                foreach (var lang in languages)
+                {
+                    LanguageSelect.Items.Add(new ComboBoxItem 
+                    { 
+                        Content = $"{lang.DisplayName} [{lang.LanguageTag}]", 
+                        Tag = lang.LanguageTag 
+                    });
+                }
+                LanguageSelect.SelectedIndex = 0;
+            }
+            catch
+            {
+                LanguageSelect.Items.Clear();
+                LanguageSelect.Items.Add(new ComboBoxItem { Content = "Default (Auto)", Tag = "" });
+                LanguageSelect.SelectedIndex = 0;
+            }
         }
 
         // ── Overlay hints ────────────────────────────────────────────────────────
@@ -90,8 +123,11 @@ namespace ImgSeek
                 if (p.Total > 0)
                 {
                     double pct = (double)p.Current / p.Total * 100;
-                    ProgressBar.Value  = pct;
-                    ProgressPct.Text   = $"{Math.Round(pct)}%";
+                    if (pct > ProgressBar.Value)
+                    {
+                        ProgressBar.Value  = pct;
+                        ProgressPct.Text   = $"{Math.Round(pct)}%";
+                    }
                     ProgressStats.Text = $"Scanned {p.Current} / {p.Total}";
                 }
                 if (p.IsMatch && p.MatchPath != null)
@@ -104,7 +140,13 @@ namespace ImgSeek
 
             try
             {
-                var results = await Task.Run(() => OcrScannerCore.RunScanAsync(folder, term, progress, token), token);
+                var options = new ScanOptions
+                {
+                    CaseSensitive = CaseSensitiveCheck.IsChecked == true,
+                    UseRegex = RegexCheck.IsChecked == true,
+                    LanguageTag = (LanguageSelect.SelectedItem as ComboBoxItem)?.Tag as string
+                };
+                var results = await Task.Run(() => OcrScannerCore.RunScanAsync(folder, term, options, progress, token), token);
 
                 ProgressBar.Value  = 100;
                 ProgressPct.Text   = "100%";
@@ -313,6 +355,101 @@ namespace ImgSeek
                 ShowMsg("✓ HTML gallery opened in browser!", error: false);
             }
             catch (Exception ex) { ShowMsg($"✕  Gallery error: {ex.Message}", error: true); }
+        }
+
+        // ── Drag & Drop ──────────────────────────────────────────────────────────
+        private void MainWindow_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
+        }
+
+        private void MainWindow_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Length > 0)
+                {
+                    string path = files[0];
+                    if (Directory.Exists(path))
+                    {
+                        FolderBox.Text = path;
+                        ShowMsg($"📁 Loaded folder via drag & drop: {path}", error: false);
+                    }
+                    else if (File.Exists(path))
+                    {
+                        string? dir = Path.GetDirectoryName(path);
+                        if (!string.IsNullOrEmpty(dir))
+                        {
+                            FolderBox.Text = dir;
+                            ShowMsg($"📁 Loaded folder containing file: {dir}", error: false);
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Export Matches ───────────────────────────────────────────────────────
+        private void ExportMatches_Click(object sender, RoutedEventArgs e)
+        {
+            if (_matches.Count == 0) return;
+
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Export OCR Matches",
+                Filter = "JSON Files (*.json)|*.json|CSV Files (*.csv)|*.csv",
+                FileName = $"ImgSeek_Export_{OcrScannerCore.SanitizeFileName(_activeTerm)}"
+            };
+
+            if (dlg.ShowDialog(this) == true)
+            {
+                try
+                {
+                    string ext = Path.GetExtension(dlg.FileName).ToLower();
+                    if (ext == ".json")
+                    {
+                        var sb = new StringBuilder();
+                        sb.AppendLine("{");
+                        sb.AppendLine($"  \"searchTerm\": \"{_activeTerm.Replace("\\", "\\\\").Replace("\"", "\\\"")}\",");
+                        sb.AppendLine($"  \"folder\": \"{_activeFolder.Replace("\\", "\\\\").Replace("\"", "\\\"")}\",");
+                        sb.AppendLine("  \"matches\": [");
+                        for (int i = 0; i < _matches.Count; i++)
+                        {
+                            string comma = (i == _matches.Count - 1) ? "" : ",";
+                            sb.AppendLine($"    \"{_matches[i].Replace("\\", "\\\\").Replace("\"", "\\\"")}\"{comma}");
+                        }
+                        sb.AppendLine("  ]");
+                        sb.AppendLine("}");
+                        File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+                    }
+                    else if (ext == ".csv")
+                    {
+                        var sb = new StringBuilder();
+                        sb.AppendLine("Index,FileName,FullPath");
+                        for (int i = 0; i < _matches.Count; i++)
+                        {
+                            string csvEscapedPath = _matches[i].Replace("\"", "\"\"");
+                            string name = Path.GetFileName(_matches[i]).Replace("\"", "\"\"");
+                            sb.AppendLine($"{i + 1},\"{name}\",\"{csvEscapedPath}\"");
+                        }
+                        File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+                    }
+
+                    ShowMsg($"✓ Exported {_matches.Count} matches to: {Path.GetFileName(dlg.FileName)}", error: false);
+                }
+                catch (Exception ex)
+                {
+                    ShowMsg($"✕ Export error: {ex.Message}", error: true);
+                }
+            }
         }
 
         // ── Message bar ──────────────────────────────────────────────────────────
