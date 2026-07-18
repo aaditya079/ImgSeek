@@ -45,6 +45,14 @@
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.75"/>
+                            </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="Bd" Property="Opacity" Value="0.35"/>
                             </Trigger>
@@ -83,6 +91,11 @@
                             <Trigger Property="IsFocused" Value="True">
                                 <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
                                 <Setter TargetName="Bd" Property="Background" Value="#1A2744"/>
+                                <Setter TargetName="Bd" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#3B82F6" BlurRadius="6" ShadowDepth="0" Opacity="0.45"/>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -340,13 +353,13 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <DockPanel Grid.Row="0">
-                    <TextBlock x:Name="ProgressPct" DockPanel.Dock="Right"
+                    <TextBlock x:Name="ProgressPct" DockPanel.Dock="Right" Typography.NumeralAlignment="Tabular"
                                Foreground="#60A5FA" FontWeight="Bold" FontSize="13" Margin="10,0,0,0">0%</TextBlock>
-                    <TextBlock x:Name="ProgressStats" Foreground="#475569" FontSize="12">Initialising…</TextBlock>
+                    <TextBlock x:Name="ProgressStats" Foreground="#475569" FontSize="12" Typography.NumeralAlignment="Tabular">Initialising…</TextBlock>
                 </DockPanel>
                 <ProgressBar x:Name="ProgressBar" Grid.Row="1" Style="{StaticResource GlowProgress}" Margin="0,5"/>
                 <DockPanel Grid.Row="2">
-                    <TextBlock x:Name="MatchStats" DockPanel.Dock="Right"
+                    <TextBlock x:Name="MatchStats" DockPanel.Dock="Right" Typography.NumeralAlignment="Tabular"
                                Foreground="#818CF8" FontSize="12" FontWeight="SemiBold"/>
                     <TextBlock x:Name="ProgressFile" Foreground="#334155" FontSize="11"
                                TextTrimming="CharacterEllipsis"/>
@@ -397,7 +410,7 @@
                 </LinearGradientBrush>
             </Border.Background>
             <DockPanel>
-                <TextBlock x:Name="FooterCount" DockPanel.Dock="Right"
+                <TextBlock x:Name="FooterCount" DockPanel.Dock="Right" Typography.NumeralAlignment="Tabular"
                            Foreground="#818CF8" FontWeight="SemiBold" FontSize="13"
                            VerticalAlignment="Center" Margin="20,0,0,0"/>
                 <StackPanel Orientation="Horizontal">

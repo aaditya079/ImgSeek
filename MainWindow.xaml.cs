@@ -309,6 +309,12 @@ namespace ImgSeek
                 Foreground = new SolidColorBrush(Color.FromRgb(0x93, 0xC5, 0xFD)),
                 BorderThickness = new Thickness(0), Cursor = Cursors.Hand
             };
+            
+            var copyNormalBg = new SolidColorBrush(Color.FromArgb(0xFF, 0x1E, 0x29, 0x3B));
+            var copyHoverBg  = new SolidColorBrush(Color.FromArgb(0xFF, 0x33, 0x41, 0x55));
+            copyBtn.MouseEnter += (_, _) => copyBtn.Background = copyHoverBg;
+            copyBtn.MouseLeave += (_, _) => copyBtn.Background = copyNormalBg;
+
             copyBtn.Click += (_, _) => { Clipboard.SetText(path); ShowMsg("✓ Path copied to clipboard!", error: false); };
 
             var fname = new TextBlock
