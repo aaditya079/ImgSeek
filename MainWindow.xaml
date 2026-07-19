@@ -66,8 +66,8 @@
         <Style x:Key="InputBox" TargetType="TextBox">
             <Setter Property="Background" Value="#131929"/>
             <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="CaretBrush" Value="#60A5FA"/>
-            <Setter Property="SelectionBrush" Value="#3B82F6"/>
+            <Setter Property="CaretBrush" Value="#C084FC"/>
+            <Setter Property="SelectionBrush" Value="#8B5CF6"/>
             <Setter Property="BorderBrush" Value="#FFFFFF2A"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="14,0,14,0"/>
@@ -89,11 +89,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="True">
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
-                                <Setter TargetName="Bd" Property="Background" Value="#1A2744"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#8B5CF6"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#1E1430"/>
                                 <Setter TargetName="Bd" Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Color="#3B82F6" BlurRadius="6" ShadowDepth="0" Opacity="0.45"/>
+                                        <DropShadowEffect Color="#8B5CF6" BlurRadius="6" ShadowDepth="0" Opacity="0.45"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -114,9 +114,9 @@
                             <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="3">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                        <GradientStop Color="#60A5FA" Offset="0"/>
-                                        <GradientStop Color="#3B82F6" Offset="0.5"/>
-                                        <GradientStop Color="#818CF8" Offset="1"/>
+                                        <GradientStop Color="#C084FC" Offset="0"/>
+                                        <GradientStop Color="#8B5CF6" Offset="0.5"/>
+                                        <GradientStop Color="#D946EF" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
                             </Border>
@@ -229,7 +229,7 @@
                         <TextBlock Text="🔍" FontSize="28" VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <TextBlock FontSize="26" FontWeight="Bold" VerticalAlignment="Center">
                             <Run Foreground="White">ImgSeek</Run>
-                            <Run Foreground="#818CF8"> — Image Name Searcher</Run>
+                            <Run Foreground="#A855F7"> — Image Name Searcher</Run>
                         </TextBlock>
                     </StackPanel>
                     <TextBlock Margin="38,5,0,0" Foreground="#64748B" FontSize="12.5">
@@ -250,8 +250,8 @@
             <Rectangle.Fill>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                     <GradientStop Color="Transparent" Offset="0"/>
-                    <GradientStop Color="#3B82F6" Offset="0.3"/>
-                    <GradientStop Color="#818CF8" Offset="0.7"/>
+                    <GradientStop Color="#8B5CF6" Offset="0.3"/>
+                    <GradientStop Color="#D946EF" Offset="0.7"/>
                     <GradientStop Color="Transparent" Offset="1"/>
                 </LinearGradientBrush>
             </Rectangle.Fill>
@@ -306,8 +306,8 @@
                             Style="{StaticResource BtnBase}" Click="Scan_Click" Padding="22,10">
                         <Button.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#3B82F6" Offset="0"/>
-                                <GradientStop Color="#6366F1" Offset="1"/>
+                                <GradientStop Color="#8B5CF6" Offset="0"/>
+                                <GradientStop Color="#D946EF" Offset="1"/>
                             </LinearGradientBrush>
                         </Button.Background>
                         <StackPanel Orientation="Horizontal">
@@ -351,13 +351,13 @@
                 </Grid.RowDefinitions>
                 <DockPanel Grid.Row="0">
                     <TextBlock x:Name="ProgressPct" DockPanel.Dock="Right" Typography.NumeralAlignment="Tabular"
-                               Foreground="#60A5FA" FontWeight="Bold" FontSize="13" Margin="10,0,0,0">0%</TextBlock>
+                               Foreground="#C084FC" FontWeight="Bold" FontSize="13" Margin="10,0,0,0">0%</TextBlock>
                     <TextBlock x:Name="ProgressStats" Foreground="#475569" FontSize="12" Typography.NumeralAlignment="Tabular">Initialising…</TextBlock>
                 </DockPanel>
                 <ProgressBar x:Name="ProgressBar" Grid.Row="1" Style="{StaticResource GlowProgress}" Margin="0,5"/>
                 <DockPanel Grid.Row="2">
                     <TextBlock x:Name="MatchStats" DockPanel.Dock="Right" Typography.NumeralAlignment="Tabular"
-                               Foreground="#818CF8" FontSize="12" FontWeight="SemiBold"/>
+                               Foreground="#A855F7" FontSize="12" FontWeight="SemiBold"/>
                     <TextBlock x:Name="ProgressFile" Foreground="#334155" FontSize="11"
                                TextTrimming="CharacterEllipsis"/>
                 </DockPanel>
@@ -411,7 +411,7 @@
             </Border.Background>
             <DockPanel>
                 <TextBlock x:Name="FooterCount" DockPanel.Dock="Right" Typography.NumeralAlignment="Tabular"
-                           Foreground="#818CF8" FontWeight="SemiBold" FontSize="13"
+                           Foreground="#A855F7" FontWeight="SemiBold" FontSize="13"
                            VerticalAlignment="Center" Margin="20,0,0,0"/>
                 <StackPanel Orientation="Horizontal">
                     <Button Content="📋  Copy All Paths" Click="CopyPaths_Click"

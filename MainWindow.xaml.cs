@@ -202,7 +202,7 @@ namespace ImgSeek
                         var headerText = new TextBlock
                         {
                             Text = $"🔑  Keyword: {kvp.Key}",
-                            Foreground = new SolidColorBrush(Color.FromRgb(0x60, 0xA5, 0xFA)), // blue accent
+                            Foreground = new SolidColorBrush(Color.FromRgb(0xA8, 0x55, 0xF7)), // purple accent
                             FontSize = 14,
                             FontWeight = FontWeights.Bold,
                             VerticalAlignment = VerticalAlignment.Center
@@ -308,7 +308,7 @@ namespace ImgSeek
 
             // Hover glow and scale transitions
             var normalBorder = new SolidColorBrush(Color.FromArgb(0x15, 0xFF, 0xFF, 0xFF));
-            var hoverBorder  = new SolidColorBrush(Color.FromArgb(0x5E, 0x3B, 0x82, 0xF6));
+            var hoverBorder  = new SolidColorBrush(Color.FromArgb(0x5E, 0x8B, 0x5C, 0xF6));
             
             card.MouseEnter += (_, _) =>
             {
@@ -374,7 +374,7 @@ namespace ImgSeek
                 Content = "Copy", FontSize = 10, FontWeight = FontWeights.SemiBold,
                 Padding = new Thickness(8, 4, 8, 4),
                 Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x1E, 0x29, 0x3B)),
-                Foreground = new SolidColorBrush(Color.FromRgb(0x93, 0xC5, 0xFD)),
+                Foreground = new SolidColorBrush(Color.FromRgb(0xD8, 0xB4, 0xFE)),
                 BorderThickness = new Thickness(0), Cursor = Cursors.Hand
             };
             
@@ -390,14 +390,14 @@ namespace ImgSeek
             
             Color badgeBgColor = ext switch
             {
-                "PNG" => Color.FromArgb(0x28, 0x3B, 0x82, 0xF6),
+                "PNG" => Color.FromArgb(0x28, 0x8B, 0x5C, 0xF6),
                 "JPG" or "JPEG" => Color.FromArgb(0x28, 0x10, 0xB9, 0x81),
                 "WEBP" => Color.FromArgb(0x28, 0xF5, 0x9E, 0x0B),
                 _ => Color.FromArgb(0x28, 0x8B, 0x5C, 0xF6)
             };
             Color badgeFgColor = ext switch
             {
-                "PNG" => Color.FromRgb(0x60, 0xA5, 0xFA),
+                "PNG" => Color.FromRgb(0xC0, 0x84, 0xFC),
                 "JPG" or "JPEG" => Color.FromRgb(0x34, 0xD3, 0x99),
                 "WEBP" => Color.FromRgb(0xFB, 0xBF, 0x24),
                 _ => Color.FromRgb(0xA7, 0x8B, 0xFA)
