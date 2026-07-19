@@ -14,7 +14,7 @@ ImgSeek is a local Windows utility that **scans folders of images using built-in
 
 ## 🌟 Key Features
 
-*   **🎨 Premium Reze Purple Theme**: A gorgeous, modern dark-mode desktop app styled with vibrant Reze purple/lilac and violet accents, featuring smooth scale-hover transitions and type-colored badges.
+*   **🎨 Premium Purple Theme**: A gorgeous, modern dark-mode desktop app styled with vibrant purple/lilac and violet accents, featuring smooth scale-hover transitions and type-colored badges.
 *   **🔑 Grouped Multiple Keywords**: Enter multiple search keywords separated by commas `,` or semicolons `;`. ImgSeek runs scans and visually separates the results into distinct, labeled sections (e.g. `Aadi` and `nyte` appear in their own rows).
 *   **🧠 AND/OR Matching Modes**: Toggle between searching for *any* keyword (OR logic) or requiring *all* keywords to match (AND logic).
 *   **⚡ Local Hardware OCR**: Powered by the native Windows `Windows.Media.Ocr` engine. Runs entirely offline with zero internet access, zero external APIs, and no data leaks.
@@ -69,7 +69,7 @@ The application handles common runtime issues gracefully without crashing or int
 *   **`SearchImagesByName.bat`**: Convenient command-line entry script that runs console scans.
 *   **`Program.cs`**: Hybrid application entry point that detects CLI arguments, handles terminal output, or boots the GUI.
 *   **`App.xaml` & `App.xaml.cs`**: WPF application startup configuration.
-*   **`MainWindow.xaml` & `MainWindow.xaml.cs`**: GUI layout, Reze Purple dark theme styling, and async search task orchestration.
+*   **`MainWindow.xaml` & `MainWindow.xaml.cs`**: GUI layout, Purple dark theme styling, and async search task orchestration.
 *   **`OcrScannerCore.cs`**: Shared core OCR engine scanning logic and helper methods to build HTML galleries.
 *   **`ImgSeek.csproj`**: Project build configuration.
 
