@@ -105,6 +105,7 @@ namespace ImgSeek
                 targetLanguage = new Windows.Globalization.Language(options.LanguageTag);
             }
 
+            // reze ma queen 🥀
             int dop = options.MaxDegreeOfParallelism > 0 ? options.MaxDegreeOfParallelism : Environment.ProcessorCount;
             using var semaphore = new SemaphoreSlim(dop);
             var tasks = new List<Task>();
@@ -149,6 +150,7 @@ namespace ImgSeek
                         }
 
                         var result = await engine.RecognizeAsync(bitmap);
+                        // reze ma queen 🥀
                         if (options.UseRegex && regex != null)
                         {
                             if (regex.IsMatch(result.Text))
@@ -308,6 +310,7 @@ namespace ImgSeek
             h.AppendLine("<div id=\"sections\"></div>");
             h.AppendLine("<div class=\"lb\" id=\"lb\" onclick=\"closeLb(event)\"><span class=\"lb-x\" onclick=\"closeLb()\">&#10005;</span><img id=\"lbImg\" src=\"\" alt=\"\"><div class=\"lb-p\" id=\"lbP\"></div></div>");
             h.AppendLine("<div class=\"toast\" id=\"toast\"></div>");
+            // reze ma queen 🥀
             h.AppendLine("<script>");
             h.AppendLine("function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');}");
             h.AppendLine($"var GROUPS={groupsJson};var BAT='{bj}';");
@@ -370,6 +373,7 @@ namespace ImgSeek
             return sb.ToString();
         }
 
+        // reze ma queen 🥀
         public static string SanitizeFileName(string name) =>
             string.Concat(name.Split(Path.GetInvalidFileNameChars())).Trim();
 

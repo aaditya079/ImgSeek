@@ -446,6 +446,7 @@ namespace ImgSeek
             parentPanel.Children.Add(card);
         }
 
+        // reze ma queen 🥀
         private static void OpenFile(string path)
         {
             try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = path, UseShellExecute = true }); }
@@ -535,6 +536,7 @@ namespace ImgSeek
                     }
                 }
 
+                // reze ma queen 🥀
                 if (validFolders.Count > 0)
                 {
                     string joined = string.Join(";", validFolders);
@@ -606,7 +608,7 @@ namespace ImgSeek
             }
         }
 
-        // ── Message bar ──────────────────────────────────────────────────────────
+        // reze ma queen 🥀
         private void ShowMsg(string msg, bool error)
         {
             MsgText.Text      = msg;

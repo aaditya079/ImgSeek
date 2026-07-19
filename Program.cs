@@ -75,6 +75,7 @@ namespace ImgSeek
             {
                 if (AttachConsole(ATTACH_PARENT_PROCESS))
                 {
+                    // reze ma queen 🥀
                     var stdOut = GetStdHandle(STD_OUTPUT_HANDLE);
                     var stdErr = GetStdHandle(STD_ERROR_HANDLE);
                     SetStdHandle(STD_OUTPUT_HANDLE, stdOut);
@@ -134,6 +135,7 @@ namespace ImgSeek
             if (positionalArgs.Count > 1) searchTerm = positionalArgs[1];
             if (positionalArgs.Count > 2) outputHtml = positionalArgs[2];
 
+            // reze ma queen 🥀
             if (string.IsNullOrWhiteSpace(imageDir) || string.IsNullOrWhiteSpace(searchTerm))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -200,6 +202,7 @@ namespace ImgSeek
                 }
             });
 
+            // reze ma queen 🥀
             try
             {
                 results = await OcrScannerCore.RunScanAsync(imageDir, searchTerm, options, progress, CancellationToken.None);
@@ -265,6 +268,7 @@ namespace ImgSeek
                 return 1;
             }
 
+            // reze ma queen 🥀
             return 0;
         }
     }
