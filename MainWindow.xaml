@@ -240,7 +240,7 @@
                 <Border DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right"
                         Background="#1E293B" CornerRadius="20" Padding="12,5"
                         BorderBrush="#FFFFFF12" BorderThickness="1">
-                    <TextBlock Text="v2.0 WPF" Foreground="#64748B" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Text="v2.5.1 WPF" Foreground="#64748B" FontSize="11" FontWeight="SemiBold"/>
                 </Border>
             </DockPanel>
         </Border>
