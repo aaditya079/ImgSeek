@@ -329,19 +329,8 @@
                 </Grid>
 
                 <!-- Options Row -->
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="8"/>
-                        <ColumnDefinition Width="180"/>
-                        <ColumnDefinition Width="24"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="Language:" Foreground="#64748B" FontSize="13" VerticalAlignment="Center"/>
-                    <ComboBox x:Name="LanguageSelect" Grid.Column="2" Style="{StaticResource DarkComboBox}" VerticalAlignment="Center" Width="180"/>
-
-                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                <Grid Grid.Row="2" Margin="0,4,0,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <CheckBox x:Name="CaseSensitiveCheck" Content="Match Case" Style="{StaticResource SleekCheck}"/>
                         <CheckBox x:Name="RegexCheck" Content="Use Regex" Style="{StaticResource SleekCheck}"/>
                         <CheckBox x:Name="MatchAllCheck" Content="Match All Keywords (AND)" Style="{StaticResource SleekCheck}"/>

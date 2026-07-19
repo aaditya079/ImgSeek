@@ -41,33 +41,6 @@ namespace ImgSeek
             DragOver += MainWindow_DragOver;
             Drop += MainWindow_Drop;
 
-            // Load OCR Languages
-            LoadOcrLanguages();
-        }
-
-        private void LoadOcrLanguages()
-        {
-            try
-            {
-                var languages = Windows.Media.Ocr.OcrEngine.AvailableRecognizerLanguages;
-                LanguageSelect.Items.Clear();
-                LanguageSelect.Items.Add(new ComboBoxItem { Content = "Default (Auto)", Tag = "" });
-                foreach (var lang in languages)
-                {
-                    LanguageSelect.Items.Add(new ComboBoxItem 
-                    { 
-                        Content = $"{lang.DisplayName} [{lang.LanguageTag}]", 
-                        Tag = lang.LanguageTag 
-                    });
-                }
-                LanguageSelect.SelectedIndex = 0;
-            }
-            catch
-            {
-                LanguageSelect.Items.Clear();
-                LanguageSelect.Items.Add(new ComboBoxItem { Content = "Default (Auto)", Tag = "" });
-                LanguageSelect.SelectedIndex = 0;
-            }
         }
 
         // ── Overlay hints ────────────────────────────────────────────────────────
@@ -170,7 +143,7 @@ namespace ImgSeek
                 {
                     CaseSensitive = CaseSensitiveCheck.IsChecked == true,
                     UseRegex = RegexCheck.IsChecked == true,
-                    LanguageTag = (LanguageSelect.SelectedItem as ComboBoxItem)?.Tag as string,
+                    LanguageTag = null,
                     MatchAllKeywords = MatchAllCheck.IsChecked == true
                 };
                 var results = await Task.Run(() => OcrScannerCore.RunScanAsync(folder, term, options, progress, token), token);
