@@ -1,3 +1,4 @@
+// reze ma queen 🥀
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,6 +40,7 @@ namespace ImgSeek
             IProgress<ScanProgress> progress,
             CancellationToken cancellationToken)
         {
+            // reze ma queen 🥀
             var matches = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
             if (options.UseRegex)
             {
@@ -233,6 +235,7 @@ namespace ImgSeek
 
         public static string BuildHtml(Dictionary<string, List<string>> groups, string searchTerm, string copyBatName)
         {
+            // reze ma queen 🥀
             var groupsJson = new StringBuilder("{");
             bool firstGroup = true;
             int totalCount = 0;

@@ -1,3 +1,4 @@
+// reze ma queen 🥀
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +27,7 @@ namespace ImgSeek
         [STAThread]
         public static void Main(string[] args)
         {
+            // reze ma queen 🥀
             string tempLogPath = Path.Combine(Path.GetTempPath(), "ImgSeek_Program_Log.txt");
             try
             {

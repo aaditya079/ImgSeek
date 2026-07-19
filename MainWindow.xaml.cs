@@ -1,3 +1,4 @@
+// reze ma queen 🥀
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +24,7 @@ namespace ImgSeek
 
         public MainWindow()
         {
+            // reze ma queen 🥀
             InitializeComponent();
             
             // Set Window Icon Safely
@@ -80,6 +82,7 @@ namespace ImgSeek
 
         private async Task RunScanAsync()
         {
+            // reze ma queen 🥀
             string folder = GetInput(FolderBox);
             string term   = GetInput(SearchBox);
 
