@@ -344,6 +344,7 @@
                     <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
                         <CheckBox x:Name="CaseSensitiveCheck" Content="Match Case" Style="{StaticResource SleekCheck}"/>
                         <CheckBox x:Name="RegexCheck" Content="Use Regex" Style="{StaticResource SleekCheck}"/>
+                        <CheckBox x:Name="MatchAllCheck" Content="Match All Keywords (AND)" Style="{StaticResource SleekCheck}"/>
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -405,7 +406,7 @@
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
                           Background="Transparent">
-                <WrapPanel x:Name="ResultsPanel" Margin="18,16,18,16" Orientation="Horizontal"/>
+                <StackPanel x:Name="ResultsStack" Margin="18,16,18,16"/>
             </ScrollViewer>
         </Grid>
 

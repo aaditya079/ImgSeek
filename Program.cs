@@ -118,6 +118,10 @@ namespace ImgSeek
                     if (int.TryParse(args[++i], out int threads))
                         options.MaxDegreeOfParallelism = threads;
                 }
+                else if (arg.Equals("--match-all", StringComparison.OrdinalIgnoreCase) || arg.Equals("-a", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.MatchAllKeywords = true;
+                }
                 else
                 {
                     positionalArgs.Add(arg);
@@ -137,6 +141,7 @@ namespace ImgSeek
                 Console.Error.WriteLine("  -r, --regex            Search using Regular Expressions");
                 Console.Error.WriteLine("  -l, --lang <tag>       OCR language tag (e.g. en-US, de-DE)");
                 Console.Error.WriteLine("  -t, --threads <num>    Maximum concurrent OCR worker threads");
+                Console.Error.WriteLine("  -a, --match-all        Match all keywords (AND logic instead of OR)");
                 Console.ResetColor();
                 return 1;
             }
@@ -169,7 +174,7 @@ namespace ImgSeek
             Console.WriteLine($"  Options: CaseSensitive={options.CaseSensitive}, UseRegex={options.UseRegex}, Lang={options.LanguageTag ?? "Auto"}, Threads={options.MaxDegreeOfParallelism}");
             Console.WriteLine();
 
-            var matches = new List<string>();
+            var results = new Dictionary<string, List<string>>();
 
             // Create console progress reporter
             var progress = new Progress<ScanProgress>(p =>
@@ -195,7 +200,7 @@ namespace ImgSeek
 
             try
             {
-                matches = await OcrScannerCore.RunScanAsync(imageDir, searchTerm, options, progress, CancellationToken.None);
+                results = await OcrScannerCore.RunScanAsync(imageDir, searchTerm, options, progress, CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -205,12 +210,23 @@ namespace ImgSeek
                 return 1;
             }
 
+            // Create flat list of unique matching paths
+            var uniqueMatches = new List<string>();
+            foreach (var kvp in results.Values)
+            {
+                foreach (var path in kvp)
+                {
+                    if (!uniqueMatches.Contains(path))
+                        uniqueMatches.Add(path);
+                }
+            }
+
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"\n=== Done: {matches.Count} match(es) out of search ===");
+            Console.WriteLine($"\n=== Done: {uniqueMatches.Count} match(es) out of search ===");
             Console.ResetColor();
 
-            if (matches.Count == 0)
+            if (uniqueMatches.Count == 0)
                 return 0;
 
             // Determine output paths
@@ -224,8 +240,8 @@ namespace ImgSeek
             // Write HTML gallery and copy batch script
             try
             {
-                File.WriteAllText(outputHtml, OcrScannerCore.BuildHtml(matches, searchTerm, copyBatName), Encoding.UTF8);
-                File.WriteAllText(copyBatPath, OcrScannerCore.BuildCopyBat(matches, searchTerm), Encoding.UTF8);
+                File.WriteAllText(outputHtml, OcrScannerCore.BuildHtml(results, searchTerm, copyBatName), Encoding.UTF8);
+                File.WriteAllText(copyBatPath, OcrScannerCore.BuildCopyBat(uniqueMatches, searchTerm), Encoding.UTF8);
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Gallery  : " + outputHtml);

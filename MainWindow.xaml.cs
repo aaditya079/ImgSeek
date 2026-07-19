@@ -16,6 +16,7 @@ namespace ImgSeek
     public partial class MainWindow : Window
     {
         private readonly List<string> _matches = new();
+        private Dictionary<string, List<string>> _lastResults = new();
         private CancellationTokenSource? _cts;
         private string _activeFolder = "";
         private string _activeTerm  = "";
@@ -119,7 +120,8 @@ namespace ImgSeek
 
             HideMsg();
             _matches.Clear();
-            ResultsPanel.Children.Clear();
+            _lastResults.Clear();
+            ResultsStack.Children.Clear();
             _activeFolder = folder;
             _activeTerm   = term;
 
@@ -154,9 +156,11 @@ namespace ImgSeek
                 }
                 if (p.IsMatch && p.MatchPath != null)
                 {
-                    _matches.Add(p.MatchPath);
+                    if (!_matches.Contains(p.MatchPath))
+                    {
+                        _matches.Add(p.MatchPath);
+                    }
                     MatchStats.Text = $"✦ {_matches.Count} match{(_matches.Count == 1 ? "" : "es")}";
-                    AddImageCard(p.MatchPath);
                 }
             }));
 
@@ -166,16 +170,26 @@ namespace ImgSeek
                 {
                     CaseSensitive = CaseSensitiveCheck.IsChecked == true,
                     UseRegex = RegexCheck.IsChecked == true,
-                    LanguageTag = (LanguageSelect.SelectedItem as ComboBoxItem)?.Tag as string
+                    LanguageTag = (LanguageSelect.SelectedItem as ComboBoxItem)?.Tag as string,
+                    MatchAllKeywords = MatchAllCheck.IsChecked == true
                 };
                 var results = await Task.Run(() => OcrScannerCore.RunScanAsync(folder, term, options, progress, token), token);
+                _lastResults = results;
 
                 ProgressBar.Value  = 100;
                 ProgressPct.Text   = "100%";
                 ProgressFile.Text  = "✓ Scan complete";
                 ProgressStats.Text = $"Finished — {folder}";
 
-                if (results.Count == 0)
+                // Render the results grouped by keyword
+                ResultsStack.Children.Clear();
+                int totalMatches = 0;
+                foreach (var kvp in results)
+                {
+                    totalMatches += kvp.Value.Count;
+                }
+
+                if (totalMatches == 0)
                 {
                     ShowMsg($"ℹ  No images found containing \"{term}\".", error: false);
                     EmptyIcon.Text     = "🔎";
@@ -186,7 +200,68 @@ namespace ImgSeek
                 else
                 {
                     FooterBar.Visibility = Visibility.Visible;
-                    FooterCount.Text = $"{results.Count} image{(results.Count == 1 ? "" : "s")} found";
+                    FooterCount.Text = $"{totalMatches} image{(totalMatches == 1 ? "" : "s")} found";
+
+                    // Build flat de-duplicated list for copy/export operations
+                    _matches.Clear();
+                    foreach (var kvp in results)
+                    {
+                        foreach (var path in kvp.Value)
+                        {
+                            if (!_matches.Contains(path))
+                                _matches.Add(path);
+                        }
+                    }
+
+                    // Render keyword sections in the UI
+                    foreach (var kvp in results)
+                    {
+                        if (kvp.Value.Count == 0) continue; // Skip keywords with zero matches
+
+                        // Section container
+                        var sectionPanel = new StackPanel { Margin = new Thickness(0, 0, 0, 24) };
+                        
+                        // Header grid
+                        var headerGrid = new Grid { Margin = new Thickness(7, 0, 7, 10) };
+                        headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                        headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                        
+                        var headerText = new TextBlock
+                        {
+                            Text = $"🔑  Keyword: {kvp.Key}",
+                            Foreground = new SolidColorBrush(Color.FromRgb(0x60, 0xA5, 0xFA)), // blue accent
+                            FontSize = 14,
+                            FontWeight = FontWeights.Bold,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        
+                        var countText = new TextBlock
+                        {
+                            Text = $"{kvp.Value.Count} match{(kvp.Value.Count == 1 ? "" : "es")}",
+                            Foreground = new SolidColorBrush(Color.FromRgb(0x47, 0x55, 0x69)), // muted gray
+                            FontSize = 12,
+                            FontWeight = FontWeights.SemiBold,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        System.Windows.Documents.Typography.SetNumeralAlignment(countText, System.Windows.FontNumeralAlignment.Tabular);
+                        
+                        Grid.SetColumn(headerText, 0);
+                        Grid.SetColumn(countText, 1);
+                        headerGrid.Children.Add(headerText);
+                        headerGrid.Children.Add(countText);
+                        
+                        sectionPanel.Children.Add(headerGrid);
+
+                        // WrapPanel for the cards in this group
+                        var wrap = new WrapPanel { Orientation = Orientation.Horizontal };
+                        foreach (var path in kvp.Value)
+                        {
+                            AddImageCardToWrap(path, wrap);
+                        }
+                        
+                        sectionPanel.Children.Add(wrap);
+                        ResultsStack.Children.Add(sectionPanel);
+                    }
                 }
             }
             catch (OperationCanceledException)
@@ -229,7 +304,7 @@ namespace ImgSeek
         }
 
         // ── Image card ───────────────────────────────────────────────────────────
-        private void AddImageCard(string path)
+        private void AddImageCardToWrap(string path, WrapPanel parentPanel)
         {
             var card = new Border
             {
@@ -392,7 +467,7 @@ namespace ImgSeek
             sp.Children.Add(foot);
 
             card.Child = sp;
-            ResultsPanel.Children.Add(card);
+            parentPanel.Children.Add(card);
         }
 
         private static void OpenFile(string path)
@@ -438,7 +513,7 @@ namespace ImgSeek
                 string batName  = "ImgSeek_" + baseName + "_CopyFiles.bat";
                 string batPath  = Path.Combine(Path.GetTempPath(), batName);
 
-                await File.WriteAllTextAsync(htmlPath, OcrScannerCore.BuildHtml(_matches, _activeTerm, batName), Encoding.UTF8);
+                await File.WriteAllTextAsync(htmlPath, OcrScannerCore.BuildHtml(_lastResults, _activeTerm, batName), Encoding.UTF8);
                 await File.WriteAllTextAsync(batPath,  OcrScannerCore.BuildCopyBat(_matches, _activeTerm),       Encoding.UTF8);
 
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = htmlPath, UseShellExecute = true });
