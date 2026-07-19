@@ -296,7 +296,7 @@
                     <Grid Grid.Column="4">
                         <TextBox x:Name="SearchBox" Style="{StaticResource InputBox}" Height="42"
                                  KeyDown="SearchBox_KeyDown"/>
-                        <TextBlock x:Name="SearchHintTb" Text="🔤  Name or keyword…" IsHitTestVisible="False"
+                        <TextBlock x:Name="SearchHintTb" Text="🔤  Keywords (separated by ; or ,)…" IsHitTestVisible="False"
                                    Foreground="#374151" FontSize="13" Margin="15,0,0,0"
                                    VerticalAlignment="Center"/>
                     </Grid>

@@ -14,7 +14,7 @@
     <SelfContained>false</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <ApplicationIcon>imgseek_icon.ico</ApplicationIcon>
-    <Version>2.5.0</Version>
+    <Version>2.5.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

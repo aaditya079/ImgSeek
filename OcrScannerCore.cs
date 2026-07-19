@@ -46,7 +46,7 @@ namespace ImgSeek
             }
             else
             {
-                var keywords = searchTerm.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var keywords = searchTerm.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 if (options.MatchAllKeywords)
                 {
                     string combinedKey = string.Join(" & ", keywords);
@@ -162,7 +162,7 @@ namespace ImgSeek
                         }
                         else
                         {
-                            var keywords = searchTerm.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            var keywords = searchTerm.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             if (keywords.Length > 0)
                             {
                                 if (options.MatchAllKeywords)
