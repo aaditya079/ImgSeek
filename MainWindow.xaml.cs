@@ -235,27 +235,45 @@ namespace ImgSeek
             {
                 Width = 205, Margin = new Thickness(7),
                 CornerRadius = new CornerRadius(12),
-                Background = new SolidColorBrush(Color.FromRgb(0x0D, 0x14, 0x24)),
-                BorderBrush = new SolidColorBrush(Color.FromArgb(0x18, 0xFF, 0xFF, 0xFF)),
+                Background = new SolidColorBrush(Color.FromArgb(0xD0, 0x0A, 0x10, 0x20)),
+                BorderBrush = new SolidColorBrush(Color.FromArgb(0x15, 0xFF, 0xFF, 0xFF)),
                 BorderThickness = new Thickness(1),
                 Cursor = Cursors.Hand,
                 ClipToBounds = true,
-                Opacity = 0
+                Opacity = 0,
+                RenderTransformOrigin = new Point(0.5, 0.5)
             };
 
-            // Fade-in animation
-            var fadeIn = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(250))) { EasingFunction = new CubicEase() };
-            var slideIn = new DoubleAnimation(10, 0, new Duration(TimeSpan.FromMilliseconds(250))) { EasingFunction = new CubicEase() };
+            // Setup composite transforms for entry and hover scaling
             var tt = new TranslateTransform();
-            card.RenderTransform = tt;
+            var st = new ScaleTransform();
+            var tg = new TransformGroup();
+            tg.Children.Add(st);
+            tg.Children.Add(tt);
+            card.RenderTransform = tg;
+
+            // Fade-in entry animation
+            var fadeIn = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(300))) { EasingFunction = new CubicEase() };
+            var slideIn = new DoubleAnimation(15, 0, new Duration(TimeSpan.FromMilliseconds(300))) { EasingFunction = new CubicEase() };
             card.BeginAnimation(UIElement.OpacityProperty, fadeIn);
             tt.BeginAnimation(TranslateTransform.YProperty, slideIn);
 
-            // Hover glow
-            var normalBorder = new SolidColorBrush(Color.FromArgb(0x18, 0xFF, 0xFF, 0xFF));
-            var hoverBorder  = new SolidColorBrush(Color.FromArgb(0x55, 0x60, 0xA5, 0xFA));
-            card.MouseEnter += (_, _) => card.BorderBrush = hoverBorder;
-            card.MouseLeave += (_, _) => card.BorderBrush = normalBorder;
+            // Hover glow and scale transitions
+            var normalBorder = new SolidColorBrush(Color.FromArgb(0x15, 0xFF, 0xFF, 0xFF));
+            var hoverBorder  = new SolidColorBrush(Color.FromArgb(0x5E, 0x3B, 0x82, 0xF6));
+            
+            card.MouseEnter += (_, _) =>
+            {
+                card.BorderBrush = hoverBorder;
+                st.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(1.03, new Duration(TimeSpan.FromMilliseconds(150))) { EasingFunction = new QuadraticEase() });
+                st.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(1.03, new Duration(TimeSpan.FromMilliseconds(150))) { EasingFunction = new QuadraticEase() });
+            };
+            card.MouseLeave += (_, _) =>
+            {
+                card.BorderBrush = normalBorder;
+                st.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(1.0, new Duration(TimeSpan.FromMilliseconds(150))) { EasingFunction = new QuadraticEase() });
+                st.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(1.0, new Duration(TimeSpan.FromMilliseconds(150))) { EasingFunction = new QuadraticEase() });
+            };
 
             var sp = new StackPanel();
 
@@ -278,13 +296,13 @@ namespace ImgSeek
             // Overlay: open icon on hover
             var overlay = new Border
             {
-                Background = new SolidColorBrush(Color.FromArgb(0xCC, 0x00, 0x00, 0x00)),
+                Background = new SolidColorBrush(Color.FromArgb(0xAA, 0x05, 0x08, 0x11)),
                 Opacity = 0, IsHitTestVisible = false
             };
             var openIcon = new TextBlock
             {
                 Text = "🔗  Open", Foreground = Brushes.White,
-                FontSize = 14, FontWeight = FontWeights.SemiBold,
+                FontSize = 13, FontWeight = FontWeights.SemiBold,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment   = VerticalAlignment.Center
             };
@@ -300,7 +318,9 @@ namespace ImgSeek
             sp.Children.Add(imgGrid);
 
             // Footer
-            var foot = new DockPanel { Margin = new Thickness(10, 7, 10, 10) };
+            var foot = new DockPanel { Margin = new Thickness(10, 8, 10, 10) };
+            
+            // 1. Copy Button (docked to Right)
             var copyBtn = new Button
             {
                 Content = "Copy", FontSize = 10, FontWeight = FontWeights.SemiBold,
@@ -314,9 +334,47 @@ namespace ImgSeek
             var copyHoverBg  = new SolidColorBrush(Color.FromArgb(0xFF, 0x33, 0x41, 0x55));
             copyBtn.MouseEnter += (_, _) => copyBtn.Background = copyHoverBg;
             copyBtn.MouseLeave += (_, _) => copyBtn.Background = copyNormalBg;
-
             copyBtn.Click += (_, _) => { Clipboard.SetText(path); ShowMsg("✓ Path copied to clipboard!", error: false); };
 
+            // 2. Extension Badge (docked to Right)
+            string ext = Path.GetExtension(path).TrimStart('.').ToUpper();
+            if (string.IsNullOrEmpty(ext)) ext = "IMG";
+            
+            Color badgeBgColor = ext switch
+            {
+                "PNG" => Color.FromArgb(0x28, 0x3B, 0x82, 0xF6),
+                "JPG" or "JPEG" => Color.FromArgb(0x28, 0x10, 0xB9, 0x81),
+                "WEBP" => Color.FromArgb(0x28, 0xF5, 0x9E, 0x0B),
+                _ => Color.FromArgb(0x28, 0x8B, 0x5C, 0xF6)
+            };
+            Color badgeFgColor = ext switch
+            {
+                "PNG" => Color.FromRgb(0x60, 0xA5, 0xFA),
+                "JPG" or "JPEG" => Color.FromRgb(0x34, 0xD3, 0x99),
+                "WEBP" => Color.FromRgb(0xFB, 0xBF, 0x24),
+                _ => Color.FromRgb(0xA7, 0x8B, 0xFA)
+            };
+
+            var extBadge = new Border
+            {
+                CornerRadius = new CornerRadius(5),
+                Padding = new Thickness(6, 2, 6, 2),
+                Background = new SolidColorBrush(badgeBgColor),
+                BorderBrush = new SolidColorBrush(Color.FromArgb(0x18, badgeFgColor.R, badgeFgColor.G, badgeFgColor.B)),
+                BorderThickness = new Thickness(1),
+                Margin = new Thickness(0, 0, 8, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            var extText = new TextBlock
+            {
+                Text = ext,
+                Foreground = new SolidColorBrush(badgeFgColor),
+                FontSize = 9,
+                FontWeight = FontWeights.Bold
+            };
+            extBadge.Child = extText;
+
+            // 3. File Name Text (takes remaining space)
             var fname = new TextBlock
             {
                 Text = Path.GetFileName(path),
@@ -324,8 +382,12 @@ namespace ImgSeek
                 FontSize = 11, TextTrimming = TextTrimming.CharacterEllipsis,
                 VerticalAlignment = VerticalAlignment.Center, ToolTip = path
             };
+
             DockPanel.SetDock(copyBtn, Dock.Right);
+            DockPanel.SetDock(extBadge, Dock.Right);
+            
             foot.Children.Add(copyBtn);
+            foot.Children.Add(extBadge);
             foot.Children.Add(fname);
             sp.Children.Add(foot);
 

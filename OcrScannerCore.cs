@@ -69,7 +69,7 @@ namespace ImgSeek
                 var regexOptions = options.CaseSensitive
                     ? System.Text.RegularExpressions.RegexOptions.None
                     : System.Text.RegularExpressions.RegexOptions.IgnoreCase;
-                regex = new System.Text.RegularExpressions.Regex(searchTerm, regexOptions);
+                regex = new System.Text.RegularExpressions.Regex(searchTerm, regexOptions, TimeSpan.FromMilliseconds(500));
             }
 
             int current = 0;
@@ -241,12 +241,19 @@ namespace ImgSeek
         {
             var sb = new StringBuilder();
             sb.AppendLine("@echo off\nchcp 65001 >nul\ntitle ImgSeek - Copy matched photos");
-            sb.AppendLine($"echo Found {matches.Count} photo(s) matching \"{searchTerm}\".\necho.");
+            
+            // Sanitize search term to prevent batch file command injection
+            string safeSearchTerm = searchTerm.Replace("\"", "").Replace("%", "%%").Replace("&", "^&");
+            sb.AppendLine($"echo Found {matches.Count} photo(s) matching \"{safeSearchTerm}\".\necho.");
             sb.AppendLine("set /p \"DEST=Enter destination folder to copy photos into: \"\necho.");
             sb.AppendLine("if not exist \"%DEST%\" (mkdir \"%DEST%\"\necho Created folder: %DEST%\n)");
             sb.AppendLine($"echo Copying {matches.Count} file(s)...\necho.");
             foreach (var p in matches)
-                sb.AppendLine($"copy /Y \"{p.Replace("%", "%%")}\" \"%DEST%\\\"");
+            {
+                // Sanitize match paths to prevent quote escaping/injection
+                string safePath = p.Replace("\"", "").Replace("%", "%%");
+                sb.AppendLine($"copy /Y \"{safePath}\" \"%DEST%\\\"");
+            }
             sb.AppendLine($"echo.\necho Done! {matches.Count} file(s) copied to \"%DEST%\"\necho.\npause");
             return sb.ToString();
         }

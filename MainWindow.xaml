@@ -197,6 +197,14 @@
     </Window.Resources>
 
     <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#060913" Offset="0"/>
+                <GradientStop Color="#0B1120" Offset="0.5"/>
+                <GradientStop Color="#050810" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>   <!-- Hero header -->
             <RowDefinition Height="Auto"/>   <!-- Search bar -->
@@ -209,10 +217,9 @@
         <!-- ══════════════════ HERO HEADER ══════════════════ -->
         <Border Grid.Row="0" Padding="36,26,36,22">
             <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#0F172A" Offset="0"/>
-                    <GradientStop Color="#1E1B4B" Offset="0.5"/>
-                    <GradientStop Color="#0F172A" Offset="1"/>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#0B1120B8" Offset="0"/>
+                    <GradientStop Color="#060913A0" Offset="1"/>
                 </LinearGradientBrush>
             </Border.Background>
             <DockPanel>
@@ -251,7 +258,7 @@
         </Rectangle>
 
         <!-- ══════════════════ SEARCH BAR ══════════════════ -->
-        <Border Grid.Row="1" Background="#0D1117" Padding="28,14">
+        <Border Grid.Row="1" Background="#060913B0" Padding="28,14" BorderBrush="#FFFFFF06" BorderThickness="0,0,0,1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -382,12 +389,15 @@
 
             <!-- Empty / placeholder state -->
             <StackPanel x:Name="EmptyState" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock x:Name="EmptyIcon" Text="🔍" FontSize="64"
-                           HorizontalAlignment="Center" Opacity="0.15"/>
+                <TextBlock x:Name="EmptyIcon" Text="🔎" FontSize="64"
+                           HorizontalAlignment="Center" Opacity="0.3"/>
                 <TextBlock x:Name="EmptyMsg"
-                           Text="Enter a folder path and keyword, then click Scan"
-                           Foreground="#1E293B" FontSize="15"
+                           Text="Ready to search your images"
+                           Foreground="#94A3B8" FontSize="16" FontWeight="SemiBold"
                            HorizontalAlignment="Center" Margin="0,14,0,0"/>
+                <TextBlock Text="Enter folder paths separated by semicolons and click Scan"
+                           Foreground="#475569" FontSize="13"
+                           HorizontalAlignment="Center" Margin="0,6,0,0"/>
             </StackPanel>
 
             <!-- Results grid -->
